@@ -70,8 +70,8 @@ export default function HomePage() {
             <button onClick={() => { setIsMenuOpen(false); router.push('/prediction-exams'); }} className="block w-full text-left py-1.5 px-2 text-[#D4AF37] bg-white/10 rounded transition font-black">EXAMS 🎯</button>
             <button onClick={() => scrollToSection('about')} className="block w-full text-left py-1.5 px-2 hover:bg-white/5 hover:text-[#D4AF37] rounded transition">ABOUT ME</button>
             <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
-              <button onClick={() => router.push('/auth/signin')} className="w-full text-center py-2 bg-white/10 text-white rounded font-bold uppercase tracking-wider">Sign In</button>
-              <button onClick={() => router.push('/auth/signup')} className="w-full text-center py-2 bg-[#D4AF37] text-[#002D62] rounded font-black uppercase tracking-wider">Sign Up</button>
+              <button onClick={() => { setIsMenuOpen(false); router.push('/auth/signin'); }} className="w-full text-center py-2 bg-white/10 text-white rounded font-bold uppercase tracking-wider">Sign In</button>
+              <button onClick={() => { setIsMenuOpen(false); router.push('/auth/signup'); }} className="w-full text-center py-2 bg-[#D4AF37] text-[#002D62] rounded font-black uppercase tracking-wider">Sign Up</button>
             </div>
           </div>
         )}
