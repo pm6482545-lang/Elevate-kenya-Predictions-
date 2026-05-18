@@ -1,5 +1,3 @@
-import './globals.css'; // Make sure this matches your global CSS file path exactly
-
 export const metadata = {
   title: 'Elevate Kenya Predictions',
   description: 'Striving for the peak of potential',
