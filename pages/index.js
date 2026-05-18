@@ -85,9 +85,9 @@ export default function Home() {
           </div>
 
           {/* Desktop Links */}
-          <div className="hidden md:flex items-center space-x-6 font-bold text-xs tracking-wide">
+          <div className="hidden md:flex items-center space-x-5 font-bold text-xs tracking-wide">
             <a href="#home" className="hover:text-[#D4AF37] transition">HOME</a>
-            <a href="#services" className="hover:text-[#D4AF37] transition">ACADEMIC SERVICES</a>
+            <a href="#services" className="hover:text-[#D4AF37] transition">REVISION MATERIALS</a>
             <a href="#assessments" className="hover:text-[#D4AF37] transition">EXAMS</a>
             <a href="#about" className="hover:text-[#D4AF37] transition">ABOUT ME</a>
             <button className="text-white hover:text-[#D4AF37] transition uppercase">Sign In</button>
@@ -110,7 +110,7 @@ export default function Home() {
         {isMenuOpen && (
           <div className="md:hidden mt-3 pt-3 border-t border-[#D4AF37]/30 space-y-3 pb-2 font-bold text-xs tracking-wider bg-[#002D62] px-4">
             <a href="#home" onClick={() => setIsMenuOpen(false)} className="block py-1 hover:text-[#D4AF37]">HOME</a>
-            <a href="#services" onClick={() => setIsMenuOpen(false)} className="block py-1 hover:text-[#D4AF37]">ACADEMIC SERVICES</a>
+            <a href="#services" onClick={() => setIsMenuOpen(false)} className="block py-1 hover:text-[#D4AF37]">REVISION MATERIALS</a>
             <a href="#assessments" onClick={() => setIsMenuOpen(false)} className="block py-1 hover:text-[#D4AF37]">EXAMS</a>
             <a href="#about" onClick={() => setIsMenuOpen(false)} className="block py-1 hover:text-[#D4AF37]">ABOUT ME</a>
           </div>
@@ -130,82 +130,97 @@ export default function Home() {
             "Striving for the peak of potential"
           </h2>
           <p className="text-sm md:text-base mt-4 max-w-xl font-medium text-gray-300 leading-relaxed">
-            Specialized Science & Mathematics National Assessment Solutions for KPSEA, KJSEA, and KCSE Thresholds.
+            Specialized National Assessment Solutions for Primary, Junior School, and Senior High School Metrics.
           </p>
           <div className="mt-8 w-full sm:w-auto">
             <a href="#services" className="inline-block w-full sm:w-auto bg-[#D4AF37] text-[#002D62] font-black tracking-wider px-10 py-4 rounded-md shadow-xl hover:bg-yellow-400 text-center transition-all text-sm uppercase">
-              Explore Services
+              Explore Resources
             </a>
           </div>
         </div>
       </header>
 
-      {/* 3. ACADEMIC SERVICES (BIG ACTION TILES / BUTTONS) */}
-      <section id="services" className="max-w-6xl mx-auto px-4 py-16">
+      {/* 3. REVISION MATERIALS & ACADEMIC SERVICES SEGMENT */}
+      <section id="services" className="max-w-7xl mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <span className="text-[#002D62] text-xs font-black uppercase tracking-widest bg-blue-50 border border-blue-200 px-3 py-1 rounded">Curriculum Scope</span>
-          <h2 className="text-3xl font-black text-[#002D62] mt-3 uppercase tracking-tight">Academic Services</h2>
-          <p className="text-gray-500 text-xs md:text-sm mt-1">Click on any academic level tile to open and filter their respective assessment grids below.</p>
+          <h2 className="text-3xl font-black text-[#002D62] mt-3 uppercase tracking-tight">Revision Materials</h2>
+          <p className="text-gray-500 text-xs md:text-sm mt-1">Select your academic milestone folder to target the specific assessment grids setup below.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {/* Lower Primary Button */}
           <button 
             onClick={() => handleServiceClick('KPSEA (Grade 6)')}
-            className="group bg-white rounded-xl overflow-hidden border-2 border-transparent hover:border-[#002D62] p-6 text-center flex flex-col items-center justify-between min-h-[250px] shadow-sm hover:shadow-md transition-all transform hover:-translate-y-1 w-full"
+            className="group bg-white rounded-xl overflow-hidden border-2 border-transparent hover:border-[#002D62] p-5 text-center flex flex-col items-center justify-between min-h-[240px] shadow-sm hover:shadow-md transition-all transform hover:-translate-y-1 w-full"
           >
-            <div className="w-14 h-14 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🎒</div>
-            <div className="my-3">
-              <h4 className="font-extrabold text-[#002D62] text-base uppercase tracking-tight">Lower Primary</h4>
-              <p className="text-gray-500 text-xs mt-2 leading-relaxed">Foundational diagnostic layouts covering assessments from Playgroup up to Grade 3.</p>
+            <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🎒</div>
+            <div className="my-2">
+              <h4 className="font-extrabold text-[#002D62] text-sm uppercase tracking-tight">Lower Primary</h4>
+              <p className="text-gray-400 text-[11px] mt-1.5 leading-relaxed">Foundational diagnostic matrices from Playgroup up to Grade 3 tiers.</p>
             </div>
-            <span className="text-[11px] font-black tracking-wider text-[#002D62] bg-blue-50 px-4 py-1.5 rounded-md uppercase group-hover:bg-[#002D62] group-hover:text-white transition-colors">
-              Open Grades →
+            <span className="text-[10px] font-black tracking-wider text-[#002D62] bg-blue-50 px-3 py-1.5 rounded uppercase group-hover:bg-[#002D62] group-hover:text-white transition-colors">
+              Open Level
             </span>
           </button>
 
           {/* Upper Primary Button */}
           <button 
             onClick={() => handleServiceClick('KPSEA (Grade 6)')}
-            className="group bg-white rounded-xl overflow-hidden border-2 border-transparent hover:border-[#002D62] p-6 text-center flex flex-col items-center justify-between min-h-[250px] shadow-sm hover:shadow-md transition-all transform hover:-translate-y-1 w-full"
+            className="group bg-white rounded-xl overflow-hidden border-2 border-transparent hover:border-[#002D62] p-5 text-center flex flex-col items-center justify-between min-h-[240px] shadow-sm hover:shadow-md transition-all transform hover:-translate-y-1 w-full"
           >
-            <div className="w-14 h-14 bg-blue-50 text-[#002D62] rounded-full flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">📚</div>
-            <div className="my-3">
-              <h4 className="font-extrabold text-[#002D62] text-base uppercase tracking-tight">Upper Primary</h4>
-              <p className="text-gray-500 text-xs mt-2 leading-relaxed">National intermediate standard prediction frameworks across Grade 4 to Grade 6 setup blocks.</p>
+            <div className="w-12 h-12 bg-blue-50 text-[#002D62] rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">📚</div>
+            <div className="my-2">
+              <h4 className="font-extrabold text-[#002D62] text-sm uppercase tracking-tight">Upper Primary</h4>
+              <p className="text-gray-400 text-[11px] mt-1.5 leading-relaxed">Intermediate curriculum objectives aligned for Grade 4 to Grade 6 setups.</p>
             </div>
-            <span className="text-[11px] font-black tracking-wider text-[#002D62] bg-blue-50 px-4 py-1.5 rounded-md uppercase group-hover:bg-[#002D62] group-hover:text-white transition-colors">
-              Open Grades →
+            <span className="text-[10px] font-black tracking-wider text-[#002D62] bg-blue-50 px-3 py-1.5 rounded uppercase group-hover:bg-[#002D62] group-hover:text-white transition-colors">
+              Open Level
             </span>
           </button>
 
-          {/* KPSEA & KJSEA Button */}
+          {/* Junior School Button */}
           <button 
             onClick={() => handleServiceClick('KJSEA (Grade 9)')}
-            className="group bg-white rounded-xl overflow-hidden border-2 border-transparent hover:border-[#D4AF37] p-6 text-center flex flex-col items-center justify-between min-h-[250px] shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 w-full ring-2 ring-[#D4AF37]/20"
+            className="group bg-white rounded-xl overflow-hidden border-2 border-transparent hover:border-[#D4AF37] p-5 text-center flex flex-col items-center justify-between min-h-[240px] shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 w-full ring-2 ring-[#D4AF37]/20"
           >
-            <div className="w-14 h-14 bg-yellow-50 text-[#002D62] rounded-full flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">📄</div>
-            <div className="my-3">
-              <h4 className="font-extrabold text-[#002D62] text-base uppercase tracking-tight">KPSEA & KJSEA</h4>
-              <p className="text-gray-500 text-xs mt-2 leading-relaxed">Comprehensive prediction materials (Questions 1-50) typeset cleanly in LaTeX for peak results.</p>
+            <div className="w-12 h-12 bg-yellow-50 text-[#002D62] rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">📄</div>
+            <div className="my-2">
+              <h4 className="font-extrabold text-[#002D62] text-sm uppercase tracking-tight">Junior School</h4>
+              <p className="text-gray-400 text-[11px] mt-1.5 leading-relaxed">Comprehensive tracking sets tailored cleanly for Grade 7 through Grade 9 nodes.</p>
             </div>
-            <span className="text-[11px] font-black tracking-wider text-[#002D62] bg-[#D4AF37]/20 px-4 py-1.5 rounded-md uppercase group-hover:bg-[#002D62] group-hover:text-white transition-colors">
-              Open Grades →
+            <span className="text-[10px] font-black tracking-wider text-[#002D62] bg-[#D4AF37]/20 px-3 py-1.5 rounded uppercase group-hover:bg-[#002D62] group-hover:text-white transition-colors">
+              Open Level
             </span>
           </button>
 
-          {/* Science & Math Button */}
+          {/* Senior School Button */}
           <button 
             onClick={() => handleServiceClick('KCSE (Form 4)')}
-            className="group bg-white rounded-xl overflow-hidden border-2 border-transparent hover:border-[#002D62] p-6 text-center flex flex-col items-center justify-between min-h-[250px] shadow-sm hover:shadow-md transition-all transform hover:-translate-y-1 w-full"
+            className="group bg-white rounded-xl overflow-hidden border-2 border-transparent hover:border-[#002D62] p-5 text-center flex flex-col items-center justify-between min-h-[240px] shadow-sm hover:shadow-md transition-all transform hover:-translate-y-1 w-full"
           >
-            <div className="w-14 h-14 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🔬</div>
-            <div className="my-3">
-              <h4 className="font-extrabold text-[#002D62] text-base uppercase tracking-tight">Science & Math</h4>
-              <p className="text-gray-500 text-xs mt-2 leading-relaxed">Expert high school tier assessment scripts built to master calculations and evaluation structures.</p>
+            <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🏛️</div>
+            <div className="my-2">
+              <h4 className="font-extrabold text-[#002D62] text-sm uppercase tracking-tight">Senior School</h4>
+              <p className="text-gray-400 text-[11px] mt-1.5 leading-relaxed">Form 1 to Form 4 high-school level resources targeting key milestones.</p>
             </div>
-            <span className="text-[11px] font-black tracking-wider text-[#002D62] bg-blue-50 px-4 py-1.5 rounded-md uppercase group-hover:bg-[#002D62] group-hover:text-white transition-colors">
-              Open Grades →
+            <span className="text-[10px] font-black tracking-wider text-[#002D62] bg-blue-50 px-3 py-1.5 rounded uppercase group-hover:bg-[#002D62] group-hover:text-white transition-colors">
+              Open Level
+            </span>
+          </button>
+
+          {/* Prediction Exams Button */}
+          <button 
+            onClick={() => handleServiceClick('KCSE (Form 4)')}
+            className="group bg-white rounded-xl overflow-hidden border-2 border-transparent hover:border-[#002D62] p-5 text-center flex flex-col items-center justify-between min-h-[240px] shadow-sm hover:shadow-md transition-all transform hover:-translate-y-1 w-full"
+          >
+            <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🎯</div>
+            <div className="my-2">
+              <h4 className="font-extrabold text-[#002D62] text-sm uppercase tracking-tight">Prediction Exams</h4>
+              <p className="text-gray-400 text-[11px] mt-1.5 leading-relaxed">Pristine national-benchmark prediction models mapped using flawless LaTeX layout configurations.</p>
+            </div>
+            <span className="text-[10px] font-black tracking-wider text-[#002D62] bg-blue-50 px-3 py-1.5 rounded uppercase group-hover:bg-[#002D62] group-hover:text-white transition-colors">
+              Open Level
             </span>
           </button>
         </div>
