@@ -1,3 +1,5 @@
+import './globals.css'; // This links the tailwind setup we just created!
+
 export const metadata = {
   title: 'Elevate Kenya Predictions',
   description: 'Striving for the peak of potential',
