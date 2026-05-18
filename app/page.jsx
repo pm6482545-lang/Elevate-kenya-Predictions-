@@ -160,8 +160,8 @@ export default function HomePage() {
             </button>
           </div>
 
-          {/* Prediction Exams Card */}
-          <div id="prediction-exams" className="group bg-white rounded-xl overflow-hidden border-2 border-[#D4AF37] p-5 text-center flex flex-col items-center justify-between min-h-[250px] shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 w-full ring-4 ring-[#D4AF37]/10 scroll-mt-24">
+          {/* Prediction Exams Card (id updated to avoid route naming conflict) */}
+          <div id="prediction-card" className="group bg-white rounded-xl overflow-hidden border-2 border-[#D4AF37] p-5 text-center flex flex-col items-center justify-between min-h-[250px] shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 w-full ring-4 ring-[#D4AF37]/10 scroll-mt-24">
             <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🎯</div>
             <div className="my-2">
               <h4 className="font-extrabold text-[#002D62] text-sm uppercase tracking-tight">Prediction Exams</h4>
