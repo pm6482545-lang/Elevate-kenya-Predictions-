@@ -4,6 +4,8 @@ import Image from 'next/image';
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isExamModalOpen, setIsExamModalOpen] = useState(false);
+  const [selectedExamLevel, setSelectedExamLevel] = useState(null);
 
   // Smooth scroll handler for quick category navigation
   const scrollToSection = (id) => {
@@ -12,6 +14,17 @@ export default function Home() {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  // Triggers the inner breakdown for chosen tier
+  const handleExamTierSelect = (tier) => {
+    setSelectedExamLevel(tier);
+  };
+
+  // Closes the modal and resets choice flags
+  const closeExamModal = () => {
+    setIsExamModalOpen(false);
+    setSelectedExamLevel(null);
   };
 
   return (
@@ -44,7 +57,7 @@ export default function Home() {
             </span>
           </div>
 
-          {/* Desktop Links - Adjusted breakpoint to prevent layout breaks */}
+          {/* Desktop Links */}
           <div className="hidden lg:flex items-center space-x-5 font-bold text-xs tracking-wide whitespace-nowrap">
             <button onClick={() => scrollToSection('home')} className="hover:text-[#D4AF37] transition uppercase">HOME</button>
             <button onClick={() => scrollToSection('services')} className="hover:text-[#D4AF37] transition uppercase">REVISION MATERIALS</button>
@@ -162,19 +175,94 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Prediction Exams Card - Target anchor added */}
+          {/* Prediction Exams Card */}
           <div id="prediction-exams" className="group bg-white rounded-xl overflow-hidden border-2 border-[#D4AF37] p-5 text-center flex flex-col items-center justify-between min-h-[250px] shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 w-full ring-4 ring-[#D4AF37]/10 scroll-mt-24">
             <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🎯</div>
             <div className="my-2">
               <h4 className="font-extrabold text-[#002D62] text-sm uppercase tracking-tight">Prediction Exams</h4>
               <p className="text-gray-400 text-[11px] mt-1.5 leading-relaxed">Pristine national-benchmark prediction models mapped using flawless LaTeX layout configurations.</p>
             </div>
-            <button className="w-full text-[10px] font-black tracking-wider text-white bg-[#002D62] py-2 rounded uppercase hover:bg-blue-800 transition-colors shadow">
-              Unlock Papers
+            {/* Swapped text from Unlock to Access Materials per instructions */}
+            <button 
+              onClick={() => setIsExamModalOpen(true)}
+              className="w-full text-[10px] font-black tracking-wider text-white bg-[#002D62] py-2 rounded uppercase group-hover:bg-[#D4AF37] group-hover:text-[#002D62] transition-all shadow"
+            >
+              Access Materials
             </button>
           </div>
         </div>
       </section>
+
+      {/* DYNAMIC SELECTION MODAL LAYER (KPSEA, KJSEA, KCSE + MPESA HANDSHAKE FLOW) */}
+      {isExamModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transform transition-all">
+            
+            {/* Modal Header */}
+            <div className="bg-[#002D62] text-white p-5 border-b-2 border-[#D4AF37] flex justify-between items-center">
+              <div>
+                <h3 className="font-black text-sm uppercase tracking-wider text-[#D4AF37]">National Prediction Archives</h3>
+                <p className="text-[11px] text-gray-300 mt-0.5">Select a target blueprint evaluation panel below.</p>
+              </div>
+              <button onClick={closeExamModal} className="text-white hover:text-[#D4AF37] p-1.5 rounded-lg hover:bg-white/10 transition">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              {!selectedExamLevel ? (
+                /* STEP 1: CHOOSE TARGET PLATFORM LEVEL */
+                <div className="space-y-3">
+                  {['KPSEA (Grade 6)', 'KJSEA (Grade 9)', 'KCSE (Form 4)'].map((level) => (
+                    <button
+                      key={level}
+                      onClick={() => handleExamTierSelect(level)}
+                      className="w-full flex items-center justify-between p-4 bg-[#F4F6F9] hover:bg-blue-50 border border-gray-200 hover:border-[#002D62] rounded-xl text-left font-black text-xs text-[#002D62] uppercase tracking-wide transition group"
+                    >
+                      <span>{level} Papers Collection</span>
+                      <span className="text-gray-400 group-hover:text-[#002D62] transition-transform group-hover:translate-x-1">→</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                /* STEP 2: COST INDICATION AND MPESA PIN NOTIFICATION PIPELINE */
+                <div className="space-y-5 text-center">
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <span className="text-[10px] font-black text-[#002D62] bg-white px-2 py-0.5 rounded border border-blue-100 uppercase tracking-wider">{selectedExamLevel}</span>
+                    <h4 className="font-extrabold text-sm text-gray-900 mt-3">Full LaTeX Exam Packet &amp; Complete Marking Schemes</h4>
+                    <p className="text-2xl font-black text-[#002D62] mt-2">Ksh 100</p>
+                  </div>
+
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-left flex items-start space-x-3">
+                    <span className="text-lg mt-0.5">📱</span>
+                    <p className="text-[11px] text-amber-900 leading-relaxed font-medium">
+                      <strong>M-Pesa STK Push Trigger:</strong> Clicking download below prompts an official payment prompt window on your registered mobile number line. Complete the transaction by entering your <strong>M-Pesa PIN</strong> to activate prompt document delivery.
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3 pt-2">
+                    <button 
+                      onClick={() => setSelectedExamLevel(null)}
+                      className="flex-1 py-2.5 border border-gray-200 text-gray-600 rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-gray-50 transition"
+                    >
+                      Back
+                    </button>
+                    <button 
+                      onClick={() => alert('STK Push initiated successfully! Please check your mobile screen.')}
+                      className="flex-2 bg-[#25D366] text-white font-black text-xs uppercase tracking-wider py-2.5 px-6 rounded-lg hover:bg-green-600 transition shadow-md"
+                    >
+                      Pay Ksh 100 to Download
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 4. PROFESSIONAL EXECUTIVE ABOUT SECTION */}
       <section id="about" className="max-w-4xl mx-auto py-16 px-4 scroll-mt-12">
