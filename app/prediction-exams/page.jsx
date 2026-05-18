@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import Head from 'next/head';
-import Image from 'next/image';
+'use client';
+
+import { useState } from 'react';
 
 export default function PredictionExamsHub() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -98,24 +98,15 @@ export default function PredictionExamsHub() {
 
   return (
     <div className="min-h-screen bg-[#F4F6F9] text-gray-800 font-sans antialiased scroll-smooth">
-      <Head>
-        <title>National Prediction Papers Portal | Elevate Kenya Predictions</title>
-        <meta name="description" content="Access specialized national prediction papers for KPSEA, KJSEA, and KCSE tailored in standard LaTeX formatting layout architectures." />
-        <script src="https://cdn.tailwindcss.com"></script>
-      </Head>
-
       {/* 1. PORTAL HEADER & NAVIGATION */}
       <nav className="bg-[#002D62] text-white sticky top-0 z-40 shadow-md border-b-2 border-[#D4AF37] px-4 py-3">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-3 cursor-pointer" onClick={() => window.location.href = '/'}>
             <div className="relative w-10 h-10 overflow-hidden rounded-full border border-white/20 bg-white flex items-center justify-center">
-              <Image 
+              <img 
                 src="/logo.png" 
                 alt="Elevate Kenya Predictions Logo" 
-                width={40} 
-                height={40} 
-                className="object-cover"
-                unoptimized
+                className="w-10 h-10 object-cover"
               />
             </div>
             <span className="font-black text-xs sm:text-sm tracking-tight uppercase text-white whitespace-nowrap">
@@ -148,7 +139,7 @@ export default function PredictionExamsHub() {
 
         {/* Mobile Dropdown Overlay */}
         {isMenuOpen && (
-          <div className="lg:hidden mt-3 pt-3 border-t border-[#D4AF37]/30 space-y-3 pb-3 font-bold text-xs tracking-wider bg-[#002D62] px-2 animate-fade-in">
+          <div className="lg:hidden mt-3 pt-3 border-t border-[#D4AF37]/30 space-y-3 pb-3 font-bold text-xs tracking-wider bg-[#002D62] px-2">
             <a href="/" className="block w-full text-left py-2 px-2 hover:bg-white/5 hover:text-[#D4AF37] rounded transition">Home Page</a>
             <button onClick={() => scrollToId('tiers-hub')} className="block w-full text-left py-2 px-2 text-[#D4AF37] bg-white/5 rounded transition">PREDICTION ARCHIVES</button>
             <button onClick={() => scrollToId('how-it-works')} className="block w-full text-left py-2 px-2 hover:bg-white/5 hover:text-[#D4AF37] rounded transition">PAYMENT GUIDE</button>
@@ -180,14 +171,15 @@ export default function PredictionExamsHub() {
         {/* Master Tier Selector Panels */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
-            { tag: 'KPSEA (Grade 6)', desc: 'Primary Milestone Hub', emoji: '🎒', accent: 'border-orange-200 bg-orange-50/40 text-orange-700' },
-            { tag: 'KJSEA (Grade 9)', desc: 'Junior School Hub', emoji: '📄', accent: 'border-yellow-300 bg-yellow-50/50 text-amber-700 ring-2 ring-yellow-400/30' },
-            { tag: 'KCSE (Form 4)', desc: 'Senior High Level Hub', emoji: '🏛️', accent: 'border-teal-200 bg-teal-50/40 text-teal-700' }
+            { tag: 'KPSEA (Grade 6)', desc: 'Primary Milestone Hub', emoji: '🎒' },
+            { tag: 'KJSEA (Grade 9)', desc: 'Junior School Hub', emoji: '📄' },
+            { tag: 'KCSE (Form 4)', desc: 'Senior High Level Hub', emoji: '🏛️' }
           ].map((tier) => (
             <button
               key={tier.tag}
+              type="button"
               onClick={() => setSelectedLevel(tier.tag)}
-              className={`p-5 rounded-2xl border text-left flex items-center justify-between transition-all transform hover:-translate-y-0.5 ${
+              className={`p-5 rounded-2xl border text-left flex items-center justify-between transition-all ${
                 selectedLevel === tier.tag 
                   ? 'bg-white border-[#002D62] shadow-md ring-2 ring-[#002D62]/10' 
                   : 'bg-white border-gray-200 hover:border-gray-300 shadow-sm'
@@ -212,6 +204,7 @@ export default function PredictionExamsHub() {
           {['Term 1', 'Term 2', 'Term 3'].map((term) => (
             <button
               key={term}
+              type="button"
               onClick={() => setSelectedTerm(term)}
               className={`flex-1 text-center py-2 px-4 rounded-lg font-bold text-xs uppercase tracking-wider transition ${
                 selectedTerm === term 
@@ -224,7 +217,7 @@ export default function PredictionExamsHub() {
           ))}
         </div>
 
-        {/* 4. DYNAMIC DOCUMENT FOLDERS ACCESSED VIA SUPABASE DATAPOINTS */}
+        {/* 4. DYNAMIC DOCUMENT FOLDERS */}
         <div className="mt-8 border-t border-gray-200/80 pt-8">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-6">
             <div>
@@ -261,6 +254,7 @@ export default function PredictionExamsHub() {
                       <p className="font-black text-sm text-gray-900">Ksh 100</p>
                     </div>
                     <button 
+                      type="button"
                       onClick={() => handleDownloadInitiation(paper)}
                       className="bg-[#002D62] hover:bg-blue-800 text-white font-black text-xs uppercase tracking-wider py-2 px-4 rounded-md transition shadow-sm flex items-center space-x-1"
                     >
@@ -283,7 +277,7 @@ export default function PredictionExamsHub() {
       {/* 5. INTERACTIVE MPESA TRANSACTION OVERLAY PANEL */}
       {checkoutPaper && (
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transform transition-all animate-scale-up">
+          <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transform transition-all">
             
             {/* Overlay Banner */}
             <div className="bg-[#002D62] text-white p-5 border-b-2 border-[#D4AF37] flex justify-between items-center">
@@ -292,6 +286,7 @@ export default function PredictionExamsHub() {
                 <p className="text-[10px] text-gray-300 mt-0.5">Safaricom M-Pesa Gateways Handshake Pipeline</p>
               </div>
               <button 
+                type="button"
                 onClick={() => setCheckoutPaper(null)}
                 className="text-white hover:text-[#D4AF37] p-1 rounded-lg hover:bg-white/10 transition"
               >
@@ -302,7 +297,7 @@ export default function PredictionExamsHub() {
             </div>
 
             {/* Document Breakdown Summary */}
-            <form onSubmit={handleMpesaStkPushSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleMpeskStkPushSubmit} className="p-6 space-y-4">
               <div className="bg-[#F4F6F9] border border-gray-200 rounded-xl p-4 text-left">
                 <span className="text-[9px] font-black text-white bg-[#002D62] px-2 py-0.5 rounded uppercase tracking-wide">{checkoutPaper.level}</span>
                 <h4 className="font-bold text-xs sm:text-sm text-gray-900 mt-2.5 leading-snug">{checkoutPaper.title}</h4>
