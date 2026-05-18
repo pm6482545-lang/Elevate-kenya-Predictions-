@@ -7,21 +7,21 @@ export default async function handler(req, res) {
 
   const { phoneNumber, amount, resourceId } = req.body;
 
-  // 1. Format the phone number to 2547XXXXXXXX
+  // 1. Format the phone number to 2547XXXXXXXX or 2541XXXXXXXX
   let formattedPhone = phoneNumber.trim().replace(/^(?:\+254|0|^)/, '254');
   if (formattedPhone.length !== 12) {
     return res.status(400).json({ error: 'Invalid phone number format.' });
   }
 
-  // 2. Safaricom Credentials (loaded securely from backend variables later)
+  // 2. Safaricom Production Credentials (loaded securely from your GitHub/Hosting Env variables)
   const consumerKey = process.env.MPESA_CONSUMER_KEY;
   const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
-  const shortCode = process.env.MPESA_SHORTCODE; // Your Pochi shortcode
+  const shortCode = process.env.MPESA_SHORTCODE; // Your production Pochi phone number (e.g., 2547XXXXXXXX)
   const passkey = process.env.MPESA_PASSKEY;
-  const callbackUrl = process.env.MPESA_CALLBACK_URL; // e.g., https://yourdomain.com/api/callback
+  const callbackUrl = process.env.MPESA_CALLBACK_URL; 
 
   try {
-    // 3. Generate OAuth Access Token from Safaricom
+    // 3. Generate OAuth Access Token from Safaricom Production Servers
     const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
     const tokenResponse = await fetch(
       'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
@@ -30,11 +30,15 @@ export default async function handler(req, res) {
     const tokenData = await tokenResponse.json();
     const accessToken = tokenData.access_token;
 
+    if (!accessToken) {
+      throw new Error('Failed to retrieve access token from Safaricom API.');
+    }
+
     // 4. Generate Security Timestamp and Password
     const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
     const password = Buffer.from(`${shortCode}${passkey}${timestamp}`).toString('base64');
 
-    // 5. Send actual STK Push Request to Safaricom
+    // 5. Send actual STK Push Request to Safaricom Production Gateway
     const stkResponse = await fetch(
       'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
       {
@@ -47,7 +51,7 @@ export default async function handler(req, res) {
           BusinessShortCode: shortCode,
           Password: password,
           Timestamp: timestamp,
-          TransactionType: 'CustomerBuyGoodsOnline', // Correct type for Pochi
+          TransactionType: 'CustomerBuyGoodsOnline', // Exact transaction type for Pochi Tills
           Amount: Math.round(amount),
           PartyA: formattedPhone,
           PartyB: shortCode, 
