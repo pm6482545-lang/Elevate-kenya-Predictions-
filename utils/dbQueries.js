@@ -5,7 +5,12 @@ export async function getPredictionPapers(subCategorySlug) {
   const { data, error } = await supabase
     .from('resources')
     .select(`
-      id, title, price, is_premium, file_path,
+      id, 
+      title, 
+      price, 
+      term, 
+      is_premium, 
+      file_path,
       sub_categories!inner(slug, name),
       subjects(name)
     `)
@@ -23,7 +28,12 @@ export async function getTermlyExams(gradeName, termNumber, subjectSlug) {
   const { data, error } = await supabase
     .from('resources')
     .select(`
-      id, title, price, is_premium, file_path,
+      id, 
+      title, 
+      price, 
+      term, 
+      is_premium, 
+      file_path,
       academic_levels!inner(name),
       subjects!inner(slug, name)
     `)
