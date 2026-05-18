@@ -62,6 +62,9 @@ export default function Home() {
         <title>Elevate Kenya Predictions | Striving for the Peak of Potential</title>
         <meta name="description" content="National-standard prediction papers professionally formatted in LaTeX for academic success." />
         <link rel="icon" href="/favicon.ico" />
+        
+        {/* INJECTING THE EMBEDDED STYLING PIPELINE TO CONVERT CLASSNAMES INTO ACTUAL VISUALS */}
+        <script src="https://cdn.tailwindcss.com"></script>
       </Head>
 
       {/* 1. TOP NAVIGATION BAR */}
@@ -105,7 +108,7 @@ export default function Home() {
 
         {/* Mobile Menu Dropdown */}
         {isMenuOpen && (
-          <div className="md:hidden mt-3 pt-3 border-t border-[#D4AF37]/30 space-y-3 pb-2 font-bold text-xs tracking-wider">
+          <div className="md:hidden mt-3 pt-3 border-t border-[#D4AF37]/30 space-y-3 pb-2 font-bold text-xs tracking-wider bg-[#002D62] px-4">
             <a href="#home" onClick={() => setIsMenuOpen(false)} className="block py-1 hover:text-[#D4AF37]">HOME</a>
             <a href="#services" onClick={() => setIsMenuOpen(false)} className="block py-1 hover:text-[#D4AF37]">ACADEMIC SERVICES</a>
             <a href="#assessments" onClick={() => setIsMenuOpen(false)} className="block py-1 hover:text-[#D4AF37]">EXAMS</a>
@@ -115,8 +118,8 @@ export default function Home() {
       </nav>
 
       {/* 2. HERO COVER SCREEN */}
-      <header id="home" className="relative bg-gradient-to-b from-[#0B3C73]/95 to-[#002D62]/100 text-white text-center px-4 py-24 md:py-36 flex flex-col items-center justify-center min-h-[85vh]">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center mix-blend-overlay opacity-15"></div>
+      <header id="home" className="relative bg-[#002D62] text-white text-center px-4 py-24 md:py-36 flex flex-col items-center justify-center min-h-[85vh] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0B3C73]/95 to-[#002D62]/100 z-0"></div>
         
         <div className="relative max-w-4xl mx-auto z-10 flex flex-col items-center">
           <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight text-[#D4AF37] uppercase drop-shadow-md">
@@ -217,7 +220,7 @@ export default function Home() {
           </div>
 
           {/* Tabs */}
-          <div className="bg-gray-100 p-1.5 rounded-xl flex items-center overflow-x-auto gap-1 shadow-inner no-scrollbar">
+          <div className="bg-gray-100 p-1.5 rounded-xl flex items-center overflow-x-auto gap-1 shadow-inner">
             {['KJSEA (Grade 9)', 'KPSEA (Grade 6)', 'KCSE (Form 4)'].map((tab) => (
               <button
                 key={tab}
@@ -232,7 +235,7 @@ export default function Home() {
           </div>
 
           {/* Sub-Filters */}
-          <div className="flex space-x-2 mt-4 overflow-x-auto pb-2 no-scrollbar">
+          <div className="flex space-x-2 mt-4 overflow-x-auto pb-2">
             {['Term 1', 'Term 2', 'Term 3'].map((term) => (
               <button
                 key={term}
