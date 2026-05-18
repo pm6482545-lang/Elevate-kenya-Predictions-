@@ -1,74 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
-export default function PredictionExamsHub() {
+export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [selectedLevel, setSelectedLevel] = useState('KJSEA (Grade 9)');
-  const [selectedTerm, setSelectedTerm] = useState('Term 2');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [checkoutPaper, setCheckoutPaper] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const router = useRouter();
 
-  // Sample structured layout mimicking your Supabase database schema
-  const predictionDatabase = [
-    {
-      id: 'kpsea-math-t2',
-      title: 'Grade 6 Mathematics KPSEA National Prediction Paper',
-      level: 'KPSEA (Grade 6)',
-      term: 'Term 2',
-      subject: 'Mathematics',
-      code: 'KPSEA-MAT-02'
-    },
-    {
-      id: 'kpsea-sci-t2',
-      title: 'Grade 6 Integrated Science KPSEA National Prediction',
-      level: 'KPSEA (Grade 6)',
-      term: 'Term 2',
-      subject: 'Integrated Science',
-      code: 'KPSEA-SCI-02'
-    },
-    {
-      id: 'kjsea-sci-t2',
-      title: 'Grade 9 Integrated Science KJSEA National Prediction Paper',
-      level: 'KJSEA (Grade 9)',
-      term: 'Term 2',
-      subject: 'Integrated Science',
-      code: 'KJSEA-ISC-02'
-    },
-    {
-      id: 'kjsea-kisw-t2',
-      title: 'Grade 9 Kiswahili Term 2 Prediction Paper (Lugha na Insha)',
-      level: 'KJSEA (Grade 9)',
-      term: 'Term 2',
-      subject: 'Kiswahili',
-      code: 'KJSEA-KIS-02'
-    },
-    {
-      id: 'kcse-math1-t2',
-      title: 'KCSE Mathematics Paper 1 National Prediction Benchmark',
-      level: 'KCSE (Form 4)',
-      term: 'Term 2',
-      subject: 'Mathematics P1',
-      code: 'KCSE-MAT1-2026'
-    },
-    {
-      id: 'kcse-chem2-t2',
-      title: 'KCSE Chemistry Paper 2 National Prediction Blueprint',
-      level: 'KCSE (Form 4)',
-      term: 'Term 2',
-      subject: 'Chemistry P2',
-      code: 'KCSE-CHM2-2026'
-    }
-  ];
-
-  // Filtering documents based on active tier and academic term selections
-  const activePapers = predictionDatabase.filter(
-    (item) => item.level === selectedLevel && item.term === selectedTerm
-  );
-
-  // Smooth scroll helper for navigational flow
-  const scrollToId = (id) => {
+  // Smooth scroll handler for anchor sections on the same page
+  const scrollToSection = (id) => {
     setIsMenuOpen(false);
     const element = document.getElementById(id);
     if (element) {
@@ -76,37 +17,21 @@ export default function PredictionExamsHub() {
     }
   };
 
-  // Handles checkout panel activation
-  const handleDownloadInitiation = (paper) => {
-    setCheckoutPaper(paper);
-  };
-
-  // Simulates standard Safaricom M-Pesa Daraja API STK Push handshake
-  const handleMpesaStkPushSubmit = (e) => {
-    e.preventDefault();
-    if (!phoneNumber) return;
-
-    setIsProcessing(true);
-    
-    // Simulating API callback processing times
-    setTimeout(() => {
-      setIsProcessing(false);
-      alert(`STK Push initiated successfully to 0${phoneNumber.replace(/^254|^0/, '')}! Please check your handset, enter your M-Pesa PIN to complete the Ksh 100 payment, and your secure download will start automatically.`);
-      setCheckoutPaper(null);
-    }, 1800);
-  };
-
   return (
     <div className="min-h-screen bg-[#F4F6F9] text-gray-800 font-sans antialiased scroll-smooth">
-      {/* 1. PORTAL HEADER & NAVIGATION */}
-      <nav className="bg-[#002D62] text-white sticky top-0 z-40 shadow-md border-b-2 border-[#D4AF37] px-4 py-3">
+      
+      {/* 1. TOP NAVIGATION BAR */}
+      <nav className="bg-[#002D62] text-white sticky top-0 z-50 shadow-md border-b-2 border-[#D4AF37] px-4 py-3">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => window.location.href = '/'}>
+          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => router.push('/')}>
             <div className="relative w-10 h-10 overflow-hidden rounded-full border border-white/20 bg-white flex items-center justify-center">
-              <img 
+              <Image 
                 src="/logo.png" 
                 alt="Elevate Kenya Predictions Logo" 
-                className="w-10 h-10 object-cover"
+                width={40} 
+                height={40} 
+                className="object-cover"
+                unoptimized
               />
             </div>
             <span className="font-black text-xs sm:text-sm tracking-tight uppercase text-white whitespace-nowrap">
@@ -114,18 +39,18 @@ export default function PredictionExamsHub() {
             </span>
           </div>
 
-          {/* Desktop Navigation Link Deck */}
-          <div className="hidden lg:flex items-center space-x-6 font-bold text-xs tracking-wide whitespace-nowrap">
-            <a href="/" className="hover:text-[#D4AF37] transition uppercase">Home Page</a>
-            <button onClick={() => scrollToId('tiers-hub')} className="text-[#D4AF37] hover:underline uppercase font-black">PREDICTION ARCHIVES</button>
-            <button onClick={() => scrollToId('how-it-works')} className="hover:text-[#D4AF37] transition uppercase">PAYMENT GUIDE</button>
+          {/* Desktop Links */}
+          <div className="hidden lg:flex items-center space-x-5 font-bold text-xs tracking-wide whitespace-nowrap">
+            <button onClick={() => scrollToSection('home')} className="hover:text-[#D4AF37] transition uppercase">HOME</button>
+            <button onClick={() => scrollToSection('services')} className="hover:text-[#D4AF37] transition uppercase">REVISION MATERIALS</button>
+            <button onClick={() => router.push('/prediction-exams')} className="text-[#D4AF37] hover:underline transition uppercase font-black tracking-wider">EXAMS 🎯</button>
+            <button onClick={() => scrollToSection('about')} className="hover:text-[#D4AF37] transition uppercase">ABOUT ME</button>
             <span className="h-4 w-[1px] bg-white/20 mx-1"></span>
-            <button className="bg-transparent border-2 border-[#D4AF37] text-white px-4 py-1.5 rounded-md font-black hover:bg-[#D4AF37] hover:text-[#002D62] transition uppercase text-[11px]">
-              My Library
-            </button>
+            <button onClick={() => router.push('/auth/signin')} className="text-white hover:text-[#D4AF37] transition uppercase">Sign In</button>
+            <button onClick={() => router.push('/auth/signup')} className="bg-transparent border-2 border-[#D4AF37] text-white px-3 py-1.5 rounded-md font-black hover:bg-[#D4AF37] hover:text-[#002D62] transition uppercase">Sign Up</button>
           </div>
 
-          {/* Mobile Hamburg Trigger */}
+          {/* Mobile Menu Trigger */}
           <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden p-2 text-[#D4AF37] focus:outline-none">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {isMenuOpen ? (
@@ -137,267 +62,216 @@ export default function PredictionExamsHub() {
           </button>
         </div>
 
-        {/* Mobile Dropdown Overlay */}
+        {/* Mobile Menu Dropdown */}
         {isMenuOpen && (
           <div className="lg:hidden mt-3 pt-3 border-t border-[#D4AF37]/30 space-y-3 pb-3 font-bold text-xs tracking-wider bg-[#002D62] px-2">
-            <a href="/" className="block w-full text-left py-2 px-2 hover:bg-white/5 hover:text-[#D4AF37] rounded transition">Home Page</a>
-            <button onClick={() => scrollToId('tiers-hub')} className="block w-full text-left py-2 px-2 text-[#D4AF37] bg-white/5 rounded transition">PREDICTION ARCHIVES</button>
-            <button onClick={() => scrollToId('how-it-works')} className="block w-full text-left py-2 px-2 hover:bg-white/5 hover:text-[#D4AF37] rounded transition">PAYMENT GUIDE</button>
+            <button onClick={() => scrollToSection('home')} className="block w-full text-left py-1.5 px-2 hover:bg-white/5 hover:text-[#D4AF37] rounded transition">HOME</button>
+            <button onClick={() => scrollToSection('services')} className="block w-full text-left py-1.5 px-2 hover:bg-white/5 hover:text-[#D4AF37] rounded transition">REVISION MATERIALS</button>
+            <button onClick={() => { setIsMenuOpen(false); router.push('/prediction-exams'); }} className="block w-full text-left py-1.5 px-2 text-[#D4AF37] bg-white/10 rounded transition font-black">EXAMS 🎯</button>
+            <button onClick={() => scrollToSection('about')} className="block w-full text-left py-1.5 px-2 hover:bg-white/5 hover:text-[#D4AF37] rounded transition">ABOUT ME</button>
+            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
+              <button onClick={() => { setIsMenuOpen(false); router.push('/auth/signin'); }} className="w-full text-center py-2 bg-white/10 text-white rounded font-bold uppercase tracking-wider">Sign In</button>
+              <button onClick={() => { setIsMenuOpen(false); router.push('/auth/signup'); }} className="w-full text-center py-2 bg-[#D4AF37] text-[#002D62] rounded font-black uppercase tracking-wider">Sign Up</button>
+            </div>
           </div>
         )}
       </nav>
 
-      {/* 2. PAGE ENTRY INTRO BANNER */}
-      <header className="bg-gradient-to-b from-[#0B3C73] to-[#002D62] text-white py-16 px-4 text-center border-b border-white/10 relative">
-        <div className="absolute inset-0 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:16px_16px] opacity-10"></div>
-        <div className="max-w-3xl mx-auto relative z-10">
-          <span className="bg-[#D4AF37] text-[#002D62] font-black text-[10px] tracking-widest px-3 py-1 rounded-full uppercase">Pristine LaTeX Architecture</span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-white mt-4 leading-tight">
-            National Assessment <span className="text-[#D4AF37]">Prediction Papers</span>
+      {/* 2. HERO COVER SCREEN */}
+      <header id="home" className="relative bg-[#002D62] text-white text-center px-4 py-24 md:py-36 flex flex-col items-center justify-center min-h-[80vh] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0B3C73]/95 to-[#002D62]/100 z-0"></div>
+        
+        <div className="relative max-w-4xl mx-auto z-10 flex flex-col items-center">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight leading-tight text-[#D4AF37] uppercase drop-shadow-md px-2">
+            Elevate Kenya Predictions
           </h1>
-          <p className="text-gray-300 text-xs sm:text-sm mt-3 max-w-xl mx-auto leading-relaxed font-medium">
-            Access institutional grade sample models tailored exactly to the KNEC diagnostic testing matrices. Fully downloadable instantly following M-Pesa confirmation.
+          <div className="w-24 sm:w-32 h-1 bg-[#D4AF37] my-6 rounded"></div>
+          <h2 className="text-lg md:text-2xl font-bold tracking-wide max-w-xl italic text-gray-200 px-4">
+            "Striving for the peak of potential"
+          </h2>
+          <p className="text-xs sm:text-sm md:text-base mt-4 max-w-xl font-medium text-gray-300 leading-relaxed px-4">
+            Specialized National Assessment Solutions for Primary, Junior School, and Senior High School Metrics.
           </p>
+          <div className="mt-8 w-full sm:w-auto px-4 flex flex-col sm:flex-row gap-4 justify-center">
+            <button onClick={() => scrollToSection('services')} className="inline-block w-full sm:w-auto bg-[#D4AF37] text-[#002D62] font-black tracking-wider px-10 py-4 rounded-md shadow-xl hover:bg-yellow-400 text-center transition-all text-sm uppercase">
+              Explore Resources
+            </button>
+            <button onClick={() => router.push('/prediction-exams')} className="inline-block w-full sm:w-auto bg-transparent border-2 border-white text-white font-black tracking-wider px-8 py-4 rounded-md shadow-xl hover:bg-white/10 text-center transition-all text-sm uppercase">
+              View Prediction Papers 🎯
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* 3. CORE EXAM TILES SELECTION DECK */}
-      <section id="tiers-hub" className="max-w-6xl mx-auto px-4 py-12 scroll-mt-16">
-        <div className="text-center md:text-left mb-6">
-          <h2 className="text-xs font-black uppercase tracking-widest text-gray-400">Step 1: Choose Your Academic Milestone Hub</h2>
-          <div className="h-0.5 w-12 bg-[#D4AF37] mt-1.5"></div>
+      {/* 3. REVISION MATERIALS & ACADEMIC TILES SEGMENT */}
+      <section id="services" className="max-w-7xl mx-auto px-4 py-16 scroll-mt-12">
+        <div className="text-center mb-12">
+          <span className="text-[#002D62] text-xs font-black uppercase tracking-widest bg-blue-50 border border-blue-200 px-3 py-1 rounded">Curriculum Scope</span>
+          <h2 className="text-2xl sm:text-3xl font-black text-[#002D62] mt-3 uppercase tracking-tight">Revision Materials</h2>
+          <p className="text-gray-500 text-xs md:text-sm mt-2 max-w-md mx-auto">Access complete structured curriculum bundles and diagnostic indicators updated to modern standards.</p>
         </div>
 
-        {/* Master Tier Selector Panels */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { tag: 'KPSEA (Grade 6)', desc: 'Primary Milestone Hub', emoji: '🎒' },
-            { tag: 'KJSEA (Grade 9)', desc: 'Junior School Hub', emoji: '📄' },
-            { tag: 'KCSE (Form 4)', desc: 'Senior High Level Hub', emoji: '🏛️' }
-          ].map((tier) => (
-            <button
-              key={tier.tag}
-              type="button"
-              onClick={() => setSelectedLevel(tier.tag)}
-              className={`p-5 rounded-2xl border text-left flex items-center justify-between transition-all ${
-                selectedLevel === tier.tag 
-                  ? 'bg-white border-[#002D62] shadow-md ring-2 ring-[#002D62]/10' 
-                  : 'bg-white border-gray-200 hover:border-gray-300 shadow-sm'
-              }`}
-            >
-              <div className="flex items-center space-x-4">
-                <span className="text-3xl">{tier.emoji}</span>
-                <div>
-                  <h3 className="font-black text-sm text-[#002D62] uppercase tracking-wide">{tier.tag}</h3>
-                  <p className="text-gray-400 text-[11px] font-medium mt-0.5">{tier.desc}</p>
-                </div>
-              </div>
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedLevel === tier.tag ? 'border-[#002D62] bg-[#002D62]' : 'border-gray-300'}`}>
-                {selectedLevel === tier.tag && <div className="w-2 h-2 bg-white rounded-full"></div>}
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {/* Sub-Filter Terms Alignment */}
-        <div className="flex justify-center md:justify-start items-center space-x-2 mt-8 bg-white border border-gray-200 p-2 rounded-xl max-w-sm mx-auto md:mx-0 shadow-sm">
-          {['Term 1', 'Term 2', 'Term 3'].map((term) => (
-            <button
-              key={term}
-              type="button"
-              onClick={() => setSelectedTerm(term)}
-              className={`flex-1 text-center py-2 px-4 rounded-lg font-bold text-xs uppercase tracking-wider transition ${
-                selectedTerm === term 
-                  ? 'bg-[#002D62] text-white shadow-sm' 
-                  : 'text-gray-500 hover:bg-gray-50'
-              }`}
-            >
-              {term}
-            </button>
-          ))}
-        </div>
-
-        {/* 4. DYNAMIC DOCUMENT FOLDERS */}
-        <div className="mt-8 border-t border-gray-200/80 pt-8">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-6">
-            <div>
-              <h3 className="text-base font-black text-[#002D62] uppercase tracking-tight">Active Repositories</h3>
-              <p className="text-gray-400 text-xs mt-0.5 font-medium">Displaying secure prediction maps for <span className="text-[#002D62] font-bold">{selectedLevel} • {selectedTerm}</span></p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {/* Lower Primary Card */}
+          <div className="group bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-[#002D62] p-5 text-center flex flex-col items-center justify-between min-h-[250px] shadow-sm hover:shadow-md transition-all transform hover:-translate-y-1 w-full">
+            <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🎒</div>
+            <div className="my-2">
+              <h4 className="font-extrabold text-[#002D62] text-sm uppercase tracking-tight">Lower Primary</h4>
+              <p className="text-gray-400 text-[11px] mt-1.5 leading-relaxed">Foundational diagnostic matrices from Playgroup up to Grade 3 tiers.</p>
             </div>
-            <span className="self-start sm:self-center text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-100 px-2.5 py-1 rounded-md">
-              Fee Counter: Ksh 100 Each
-            </span>
+            <button onClick={() => router.push('/lower-primary')} className="w-full text-[10px] font-black tracking-wider text-[#002D62] bg-blue-50 py-2 rounded uppercase group-hover:bg-[#002D62] group-hover:text-white transition-colors">
+              Access Materials
+            </button>
           </div>
 
-          {activePapers.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {activePapers.map((paper) => (
-                <div key={paper.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                  <div className="p-5">
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="text-[9px] font-bold bg-blue-50 text-[#002D62] border border-blue-100 px-2 py-0.5 rounded uppercase tracking-wider font-mono">
-                        {paper.code}
-                      </span>
-                      <span className="text-[9px] font-black uppercase text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded tracking-wide">
-                        Verified Secure
-                      </span>
-                    </div>
-                    <h4 className="font-extrabold text-gray-900 text-sm sm:text-base leading-snug line-clamp-3 min-h-[4rem]">
-                      {paper.title}
-                    </h4>
-                  </div>
+          {/* Upper Primary Card */}
+          <div className="group bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-[#002D62] p-5 text-center flex flex-col items-center justify-between min-h-[250px] shadow-sm hover:shadow-md transition-all transform hover:-translate-y-1 w-full">
+            <div className="w-12 h-12 bg-blue-50 text-[#002D62] rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">📚</div>
+            <div className="my-2">
+              <h4 className="font-extrabold text-[#002D62] text-sm uppercase tracking-tight">Upper Primary</h4>
+              <p className="text-gray-400 text-[11px] mt-1.5 leading-relaxed">Intermediate curriculum objectives aligned for Grade 4 to Grade 6 setups.</p>
+            </div>
+            <button onClick={() => router.push('/upper-primary')} className="w-full text-[10px] font-black tracking-wider text-[#002D62] bg-blue-50 py-2 rounded uppercase group-hover:bg-[#002D62] group-hover:text-white transition-colors">
+              Access Materials
+            </button>
+          </div>
 
-                  {/* Payment Action Row */}
-                  <div className="p-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-                    <div>
-                      <p className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">Standard Cost</p>
-                      <p className="font-black text-sm text-gray-900">Ksh 100</p>
-                    </div>
-                    <button 
-                      type="button"
-                      onClick={() => handleDownloadInitiation(paper)}
-                      className="bg-[#002D62] hover:bg-blue-800 text-white font-black text-xs uppercase tracking-wider py-2 px-4 rounded-md transition shadow-sm flex items-center space-x-1"
-                    >
-                      <span>📥 Download Paper</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
+          {/* Junior School Card */}
+          <div className="group bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-[#002D62] p-5 text-center flex flex-col items-center justify-between min-h-[250px] shadow-sm hover:shadow-md transition-all transform hover:-translate-y-1 w-full">
+            <div className="w-12 h-12 bg-yellow-50 text-[#002D62] rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">📄</div>
+            <div className="my-2">
+              <h4 className="font-extrabold text-[#002D62] text-sm uppercase tracking-tight">Junior School</h4>
+              <p className="text-gray-400 text-[11px] mt-1.5 leading-relaxed">Comprehensive tracking sets tailored cleanly for Grade 7 through Grade 9 nodes.</p>
             </div>
-          ) : (
-            <div className="bg-white border-2 border-dashed border-gray-200 rounded-2xl py-12 px-4 text-center max-w-md mx-auto">
-              <span className="text-2xl block mb-2">📁</span>
-              <p className="text-gray-500 text-xs sm:text-sm font-bold">No predictions mapped under {selectedLevel} for {selectedTerm} yet.</p>
-              <p className="text-gray-400 text-[11px] mt-1 font-medium">Please select a different term block or academic tier bracket.</p>
+            <button onClick={() => router.push('/junior-school')} className="w-full text-[10px] font-black tracking-wider text-[#002D62] bg-blue-50 py-2 rounded uppercase group-hover:bg-[#002D62] group-hover:text-white transition-colors">
+              Access Materials
+            </button>
+          </div>
+
+          {/* Senior School Card */}
+          <div className="group bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-[#002D62] p-5 text-center flex flex-col items-center justify-between min-h-[250px] shadow-sm hover:shadow-md transition-all transform hover:-translate-y-1 w-full">
+            <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🏛️</div>
+            <div className="my-2">
+              <h4 className="font-extrabold text-[#002D62] text-sm uppercase tracking-tight">Senior School</h4>
+              <p className="text-gray-400 text-[11px] mt-1.5 leading-relaxed">Form 1 to Form 4 high-school level resources targeting key milestones.</p>
             </div>
-          )}
+            <button onClick={() => router.push('/senior-school')} className="w-full text-[10px] font-black tracking-wider text-[#002D62] bg-blue-50 py-2 rounded uppercase group-hover:bg-[#002D62] group-hover:text-white transition-colors">
+              Access Materials
+            </button>
+          </div>
+
+          {/* Prediction Exams Card */}
+          <div className="group bg-white rounded-xl overflow-hidden border-2 border-[#D4AF37] p-5 text-center flex flex-col items-center justify-between min-h-[250px] shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 w-full ring-4 ring-[#D4AF37]/10">
+            <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🎯</div>
+            <div className="my-2">
+              <h4 className="font-extrabold text-[#002D62] text-sm uppercase tracking-tight">Prediction Exams</h4>
+              <p className="text-gray-400 text-[11px] mt-1.5 leading-relaxed">Pristine national-benchmark prediction models mapped using flawless LaTeX layout configurations.</p>
+            </div>
+            <button 
+              onClick={() => router.push('/prediction-exams')}
+              className="w-full text-[10px] font-black tracking-wider text-white bg-[#002D62] py-2 rounded uppercase group-hover:bg-[#D4AF37] group-hover:text-[#002D62] transition-all shadow"
+            >
+              Access Materials
+            </button>
+          </div>
         </div>
       </section>
 
-      {/* 5. INTERACTIVE MPESA TRANSACTION OVERLAY PANEL */}
-      {checkoutPaper && (
-        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transform transition-all">
-            
-            {/* Overlay Banner */}
-            <div className="bg-[#002D62] text-white p-5 border-b-2 border-[#D4AF37] flex justify-between items-center">
-              <div>
-                <h3 className="font-black text-sm uppercase tracking-wider text-[#D4AF37]">Secure Document Checkout</h3>
-                <p className="text-[10px] text-gray-300 mt-0.5">Safaricom M-Pesa Gateways Handshake Pipeline</p>
+      {/* 4. PROFESSIONAL EXECUTIVE ABOUT SECTION */}
+      <section id="about" className="max-w-4xl mx-auto py-16 px-4 scroll-mt-12">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 md:p-12 shadow-sm flex flex-col md:flex-row items-center gap-6 md:gap-10">
+          <div className="w-36 h-36 md:w-44 md:h-44 flex-shrink-0 relative rounded-full overflow-hidden shadow-md border-4 border-white ring-4 ring-[#002D62] bg-gray-50">
+            <Image 
+              src="/peter.png" 
+              alt="Peter Musau - Lead Developer" 
+              width={180} 
+              height={180} 
+              className="object-cover"
+              unoptimized
+            />
+          </div>
+          <div className="flex-1 text-center md:text-left">
+            <span className="inline-block text-[#D4AF37] font-black text-xs uppercase tracking-widest bg-[#002D62] px-3 py-1 rounded">Founder Profile</span>
+            <h2 className="text-2xl font-black text-[#002D62] uppercase tracking-tight mt-3 mb-3">Peter Musau Mutua</h2>
+            <div className="h-1 w-16 bg-[#D4AF37] mx-auto md:mx-0 mb-4 rounded"></div>
+            <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed font-normal">
+              As a STEM educator and developer, I founded Elevate Kenya Predictions to bridge academic assessment formatting gaps across schools nationwide. Backed by a high-caliber framework built around pristine LaTeX code configurations, our platform equips instructors, institutions, and candidates with accurate predictive indicators to maximize score indices during national evaluation intervals.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. BRAND FOOTER WITH EXACT SOCIAL CHANNELS ACTION BUTTONS */}
+      <footer className="bg-[#001F42] text-gray-400 text-xs md:text-sm pt-12 pb-6 border-t-4 border-[#D4AF37] px-4">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 pb-8 border-b border-gray-800">
+          
+          {/* Brand Col */}
+          <div>
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="relative w-8 h-8 rounded-full overflow-hidden bg-white flex items-center justify-center">
+                <Image 
+                  src="/logo.png" 
+                  alt="Elevate Kenya Footer Logo" 
+                  width={32} 
+                  height={32} 
+                  className="object-cover"
+                  unoptimized
+                />
               </div>
+              <h4 className="text-white font-black text-sm uppercase tracking-wider">Elevate Kenya</h4>
+            </div>
+            <p className="text-xs leading-relaxed max-w-xs text-gray-400">
+              Transforming test preparation with standard, highly precise evaluation resources for specialized education metrics.
+            </p>
+          </div>
+
+          {/* Communications Col */}
+          <div>
+            <h4 className="text-[#D4AF37] font-black text-xs md:text-sm uppercase tracking-widest mb-4">Contact Info</h4>
+            <div className="space-y-2 text-xs font-medium text-gray-300">
+              <p>📍 Likoni, Mombasa, Kenya</p>
+              <p>✉️ Email: pm6482545@gmail.com</p>
+              <p>🏫 Elevate Kenya Prediction Hub</p>
+            </div>
+          </div>
+
+          {/* Direct Channels Button Array */}
+          <div>
+            <h4 className="text-[#D4AF37] font-black text-xs md:text-sm uppercase tracking-widest mb-4">Official Channels</h4>
+            <div className="flex flex-col space-y-2.5 max-w-xs">
+              
+              {/* WhatsApp Button */}
               <button 
-                type="button"
-                onClick={() => setCheckoutPaper(null)}
-                className="text-white hover:text-[#D4AF37] p-1 rounded-lg hover:bg-white/10 transition"
+                onClick={() => window.open('https://wa.me/254746357349', '_blank')}
+                className="w-full bg-[#25D366] text-white font-black text-[11px] uppercase tracking-wider py-2.5 px-4 rounded shadow-sm hover:bg-green-600 transition flex items-center justify-center space-x-2"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <span>💬 WhatsApp Support</span>
               </button>
-            </div>
 
-            {/* Document Breakdown Summary */}
-            <form onSubmit={handleMpeskStkPushSubmit} className="p-6 space-y-4">
-              <div className="bg-[#F4F6F9] border border-gray-200 rounded-xl p-4 text-left">
-                <span className="text-[9px] font-black text-white bg-[#002D62] px-2 py-0.5 rounded uppercase tracking-wide">{checkoutPaper.level}</span>
-                <h4 className="font-bold text-xs sm:text-sm text-gray-900 mt-2.5 leading-snug">{checkoutPaper.title}</h4>
-                <div className="flex justify-between items-center mt-4 pt-3 border-t border-gray-200/80">
-                  <span className="text-xs text-gray-500 font-bold">Remittance Fee:</span>
-                  <span className="text-xl font-black text-[#002D62]">Ksh 100</span>
-                </div>
-              </div>
+              {/* Facebook Button */}
+              <button 
+                onClick={() => window.open('https://www.facebook.com/profile.php?id=61582117877169', '_blank')}
+                className="w-full bg-[#1877F2] text-white font-black text-[11px] uppercase tracking-wider py-2.5 px-4 rounded shadow-sm hover:bg-blue-700 transition flex items-center justify-center space-x-2"
+              >
+                <span>📘 Facebook Page</span>
+              </button>
 
-              {/* STK Push Instruction Panel */}
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-left flex items-start space-x-2.5">
-                <span className="text-lg mt-0.5">📱</span>
-                <p className="text-[11px] text-amber-900 leading-relaxed font-medium">
-                  <strong>Instant Handset Verification:</strong> Enter your mobile line below. Upon clicking download, an automated secure push transaction requests your verification. Input your <strong>M-Pesa PIN</strong> on your screen to activate your target Supabase download payload.
-                </p>
-              </div>
+              {/* LinkedIn Button */}
+              <button 
+                onClick={() => window.open('https://www.linkedin.com/in/peter-musau-01a533407', '_blank')}
+                className="w-full bg-[#0077B5] text-white font-black text-[11px] uppercase tracking-wider py-2.5 px-4 rounded shadow-sm hover:bg-blue-800 transition flex items-center justify-center space-x-2"
+              >
+                <span>🔗 LinkedIn Profile</span>
+              </button>
 
-              {/* Number Input Element */}
-              <div className="text-left space-y-1.5">
-                <label className="block text-[11px] font-black uppercase text-gray-500 tracking-wide">Safaricom Mobile Number Line</label>
-                <div className="relative rounded-lg shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-gray-400 font-bold text-xs sm:text-sm">+254</span>
-                  </div>
-                  <input
-                    type="tel"
-                    required
-                    pattern="^(7|1)[0-9]{8}$"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
-                    placeholder="712345678"
-                    className="w-full pl-14 pr-3 py-2.5 bg-white border border-gray-300 rounded-lg text-xs sm:text-sm font-bold text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#002D62] focus:ring-1 focus:ring-[#002D62]"
-                  />
-                </div>
-                <p className="text-[10px] text-gray-400 font-medium">Format layout example: 712345678 or 112345678</p>
-              </div>
-
-              {/* Submit Buttons Array */}
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setCheckoutPaper(null)}
-                  className="flex-1 py-2.5 border border-gray-200 text-gray-600 rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-gray-50 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isProcessing}
-                  className={`flex-2 text-white font-black text-xs uppercase tracking-wider py-2.5 px-5 rounded-lg transition shadow-md flex items-center justify-center space-x-2 ${
-                    isProcessing ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#25D366] hover:bg-green-600'
-                  }`}
-                >
-                  {isProcessing ? (
-                    <span>🔄 Generating Push...</span>
-                  ) : (
-                    <span>Pay Ksh 100 to Download</span>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* 6. STEP BY STEP OPERATIVE FLOW DIAGRAM SECTOR */}
-      <section id="how-it-works" className="bg-white border-t border-b border-gray-200 py-16 px-4 scroll-mt-12">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl font-black text-[#002D62] uppercase tracking-tight">How Secure Downloads Work</h2>
-          <p className="text-gray-500 text-xs sm:text-sm mt-1 max-w-md mx-auto">Our automated pipeline securely triggers PDF indicators direct to your system logs instantly.</p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-10 text-left">
-            <div className="space-y-2">
-              <div className="w-8 h-8 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-center font-black text-xs text-[#002D62]">1</div>
-              <h4 className="font-extrabold text-sm text-gray-900 uppercase tracking-tight">Select Assessment</h4>
-              <p className="text-gray-500 text-xs leading-relaxed font-medium">Browse our active archives across KPSEA, KJSEA, or KCSE matrices and click download.</p>
-            </div>
-            <div className="space-y-2">
-              <div className="w-8 h-8 bg-green-50 border border-green-200 rounded-lg flex items-center justify-center font-black text-xs text-green-700">2</div>
-              <h4 className="font-extrabold text-sm text-gray-900 uppercase tracking-tight">Enter M-Pesa PIN</h4>
-              <p className="text-gray-500 text-xs leading-relaxed font-medium">Input your standard number parameters to trigger a secure STK Push directly on your mobile interface.</p>
-            </div>
-            <div className="space-y-2">
-              <div className="w-8 h-8 bg-purple-50 border border-purple-200 rounded-lg flex items-center justify-center font-black text-xs text-purple-700">3</div>
-              <h4 className="font-extrabold text-sm text-gray-900 uppercase tracking-tight">Instant File Fetch</h4>
-              <p className="text-gray-500 text-xs leading-relaxed font-medium">Once authentication hooks resolve, the standard high-fidelity LaTeX evaluation PDF prompts download files immediately.</p>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* 7. SECURE BRAND CLOSURE FOOTER */}
-      <footer className="bg-[#001F42] text-gray-400 text-xs md:text-sm py-8 border-t-4 border-[#D4AF37] px-4 text-center">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px]">
-          <p>© 2026 Elevate Kenya Predictions. Connected securely to isolated cloud storage nodes.</p>
-          <div className="flex space-x-4 font-bold text-gray-300">
-            <a href="/" className="hover:text-[#D4AF37]">BACK TO HOME</a>
-            <span>•</span>
-            <button onClick={() => scrollToId('tiers-hub')} className="hover:text-[#D4AF37] uppercase">ARCHIVES TOP</button>
-          </div>
+        {/* Closing Attribution Deck */}
+        <div className="max-w-6xl mx-auto pt-6 text-center text-[11px] text-gray-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+          <p>© 2026 Elevate Kenya Predictions. All Rights Reserved.</p>
+          <p className="italic text-[#D4AF37]/70 font-semibold uppercase tracking-wider">"Striving for the peak of potential"</p>
         </div>
       </footer>
     </div>
