@@ -1,4 +1,4 @@
-import './globals.css'; // This links the tailwind setup we just created!
+import './globals.css';
 
 export const metadata = {
   title: 'Elevate Kenya Predictions',
@@ -8,7 +8,8 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className="bg-[#F4F6F9] text-gray-800 font-sans antialiased">
+      <head />
+      <body className="bg-[#F4F6F9] text-gray-800 font-sans antialiased m-0 p-0">
         {children}
       </body>
     </html>
