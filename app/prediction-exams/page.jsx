@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 
-// Absolute defensive runtime connection handling
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -15,8 +14,9 @@ export default function PredictionExamsPage() {
   const [selectedTerm, setSelectedTerm] = useState('Term 2'); 
   const [papers, setPapers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [systemError, setSystemError] = useState(null); // Tracks hidden connection errors
+  const [debugRawFiles, setDebugRawFiles] = useState([]); // Tracks raw un-filtered file count
   
-  // STK Push state trackers
   const [checkoutPaper, setCheckoutPaper] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [paymentStatus, setPaymentStatus] = useState('');
@@ -24,32 +24,41 @@ export default function PredictionExamsPage() {
   const examTypes = ['KPSEA', 'KJSEA', 'KCSE'];
   const terms = ['Term 1', 'Term 2', 'Term 3'];
 
-  // Automatically read, decode, and match bucket files dynamically
   useEffect(() => {
     const autoFetchFromBucket = async () => {
       setLoading(true);
       setCheckoutPaper(null);
       setPaymentStatus('');
+      setSystemError(null);
+      setDebugRawFiles([]);
+      
       try {
-        // 1. List all files directly from your 'premium resources' storage bucket
+        if (!supabaseUrl || !supabaseAnonKey) {
+          setSystemError("Vercel Environment Keys Missing! The frontend cannot see your Supabase URL or Anon Key.");
+          setLoading(false);
+          return;
+        }
+
         const { data: fileList, error } = await supabase
           .storage
           .from('premium resources')
           .list('', { limit: 100 });
 
-        if (error) throw error;
+        if (error) {
+          setSystemError(`Supabase Storage Error: ${error.message}`);
+          throw error;
+        }
 
         if (fileList && Array.isArray(fileList)) {
-          // 2. Map through the bucket files with extra formatting defense
+          setDebugRawFiles(fileList); // Track total objects read from bucket
+
           const decodedPapers = fileList
-            .filter(file => file && file.name && file.name.endsWith('.pdf')) // Only accept valid PDF extensions
+            .filter(file => file && file.name && file.name.endsWith('.pdf'))
             .map((file) => {
               try {
-                // Strip extension safely
                 const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.pdf')) || file.name;
                 const parts = nameWithoutExt.split('-');
 
-                // Skip any file that doesn't follow our hyphen formula setup
                 if (parts.length < 4) return null;
 
                 const rawTier = parts[0] || '';
@@ -58,11 +67,8 @@ export default function PredictionExamsPage() {
                 const rawSubject = parts[3] || '';
                 const priceVal = parts[4] || '0';
 
-                // Clean formatting characters
                 const cleanTerm = rawTerm.split('_').join(' ');
                 const cleanSubject = rawSubject.split('_').join(' ');
-
-                // Capitalize terms for the UI presentation element
                 const formattedTerm = cleanTerm.replace(/\b\w/g, c => c.toUpperCase());
 
                 return {
@@ -76,13 +82,11 @@ export default function PredictionExamsPage() {
                   storage_path: file.name
                 };
               } catch (innerErr) {
-                console.error("Skipping damaged file name object structure:", file.name);
                 return null;
               }
             })
-            .filter(item => item !== null); // Strip out skipped items cleanly
+            .filter(item => item !== null);
 
-          // 3. Match against currently selected target button properties
           const liveFiltered = decodedPapers.filter(
             (p) => p.school_tier === 'prediction_exams' && 
                    p.grade_class === selectedExam.toLowerCase() && 
@@ -92,7 +96,8 @@ export default function PredictionExamsPage() {
           setPapers(liveFiltered);
         }
       } catch (err) {
-        console.error('Storage bucket reading error:', err.message);
+        console.error(err);
+        if (!systemError) setSystemError(err.message);
       } finally {
         setLoading(false);
       }
@@ -102,7 +107,7 @@ export default function PredictionExamsPage() {
   }, [selectedExam, selectedTerm]);
 
   const handlePaperClick = (paper) => {
-    setCheckoutPaper(paper); // Opens the M-PESA checkout drawer
+    setCheckoutPaper(paper);
   };
 
   const handleStkPushSubmit = async (e) => {
@@ -142,7 +147,7 @@ export default function PredictionExamsPage() {
       }
     } catch (error) {
       console.error('STK Push submission error:', error);
-      alert('Payment initialization failed. Ensure Vercel Environment Variables match live Daraja passkeys.');
+      alert('Payment initialization failed.');
       setPaymentStatus('');
     }
   };
@@ -158,6 +163,19 @@ export default function PredictionExamsPage() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-12">
+        {/* SYSTEM STATUS DIAGNOSTIC PANEL */}
+        {systemError && (
+          <div className="mb-6 bg-red-50 border-2 border-red-500 rounded-xl p-4 text-red-900 text-xs font-mono">
+            <p className="font-bold uppercase tracking-wider mb-1 text-red-700">⚠️ System Diagnostic Notice:</p>
+            <p>{systemError}</p>
+          </div>
+        )}
+
+        <div className="mb-6 bg-gray-100 border rounded-xl p-3 text-[11px] font-mono flex gap-4 justify-center text-gray-600">
+          <span>Connected Project URL: {supabaseUrl ? "✅ Found" : "❌ Missing"}</span>
+          <span>Raw Files in Bucket: <strong className="text-gray-900">{debugRawFiles.length}</strong></span>
+        </div>
+
         {/* EXAM TIER ROW */}
         <div className="text-center mb-6">
           <div className="inline-flex rounded-lg bg-gray-200 p-1 shadow-inner">
