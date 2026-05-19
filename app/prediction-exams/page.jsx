@@ -44,34 +44,32 @@ export default function PredictionExamsPage() {
           const decodedPapers = fileList
             .filter(file => file.name.endsWith('.pdf')) // Only process PDF files
             .map((file) => {
-              // Remove the .pdf extension and split the name by hyphens
-              const nameWithoutExt = file.name.replace('.pdf', '');
+              // Extract file name without extension cleanly
+              const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.pdf')) || file.name;
               const parts = nameWithoutExt.split('-');
 
               // Extract raw parts based on your formula layout
-              const tier = parts[0] || 'unknown';
-              const grade = parts[1] || 'KJSEA';
-              const rawTerm = parts[2] || 'Term_1';
-              const rawSubject = parts[3] || 'Subject';
+              const rawTier = parts[0] || '';
+              const rawGrade = parts[1] || '';
+              const rawTerm = parts[2] || '';
+              const rawSubject = parts[3] || '';
               const priceVal = parts[4] || '0';
 
               // Dynamic underscore to space cleanup
-              // This normalizes "Term_2" to "Term 2" or "Integrated_Science" to "Integrated Science"
-              const cleanTerm = rawTerm.replace(/_/g, ' ');
-              const cleanSubject = rawSubject.replace(/_/g, ' ');
+              const cleanTerm = rawTerm.split('_').join(' ');
+              const cleanSubject = rawSubject.split('_').join(' ');
 
               // Capitalize terms nicely so they display beautifully on the card UI
               const formattedTerm = cleanTerm.replace(/\b\w/g, c => c.toUpperCase());
 
               return {
                 id: file.id || file.name,
-                school_tier: tier.trim().toLowerCase(),      // e.g. "prediction_exams"
-                grade_class: grade.trim().toUpperCase(),     // e.g. "KJSEA"
-                term: formattedTerm.trim(),                  // e.g. "Term 2" for UI display
-                raw_term_clean: cleanTerm.trim().toLowerCase(), // e.g. "term 2" for secure matching
+                school_tier: rawTier.trim().toLowerCase(),      // e.g. "prediction_exams"
+                grade_class: rawGrade.trim().toLowerCase(),     // e.g. "kjsea"
+                term_match: cleanTerm.trim().toLowerCase(),    // e.g. "term 2" for secure matching
+                display_term: formattedTerm.trim(),            // e.g. "Term 2"
                 subject: cleanSubject.trim(),
                 price: parseInt(priceVal, 10) || 0,
-                is_premium: parseInt(priceVal, 10) > 0,
                 storage_path: file.name
               };
             });
@@ -79,8 +77,8 @@ export default function PredictionExamsPage() {
           // 3. Dynamic Case-Insensitive Filter matching against active selections
           const liveFiltered = decodedPapers.filter(
             (p) => p.school_tier === 'prediction_exams' && 
-                   p.grade_class === selectedExam.toUpperCase() && 
-                   p.raw_term_clean === selectedTerm.toLowerCase()
+                   p.grade_class === selectedExam.toLowerCase() && 
+                   p.term_match === selectedTerm.toLowerCase()
           );
 
           setPapers(liveFiltered);
@@ -181,7 +179,7 @@ export default function PredictionExamsPage() {
               <div>
                 <h3 className="font-black text-[#002D62] text-xs uppercase tracking-widest">Secure M-PESA Checkout</h3>
                 <p className="text-sm font-extrabold text-gray-900 mt-1 uppercase">
-                  {checkoutPaper.grade_class} {checkoutPaper.subject} ({checkoutPaper.term})
+                  {selectedExam} {checkoutPaper.subject} ({checkoutPaper.display_term})
                 </p>
               </div>
               <button onClick={() => setCheckoutPaper(null)} className="text-gray-400 hover:text-gray-600 font-bold text-sm">✕ Close</button>
