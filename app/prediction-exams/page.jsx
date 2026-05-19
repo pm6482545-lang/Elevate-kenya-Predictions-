@@ -4,69 +4,15 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize connection to your automated Supabase architecture
+// Connection to your Supabase project architecture
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// 🔥 LOCAL DATA BACKUP: This displays if your Supabase database table is currently empty!
-const LOCAL_BACKUP_PAPERS = [
-  {
-    id: "kpsea-math-2026",
-    school_tier: "prediction exams",
-    grade_class: "KPSEA",
-    term: "Term 2",
-    subject: "Mathematics Prediction Paper",
-    is_premium: true,
-    price: 50,
-    storage_path: "exams/kpsea_math.pdf"
-  },
-  {
-    id: "kpsea-science-2026",
-    school_tier: "prediction exams",
-    grade_class: "KPSEA",
-    term: "Term 2",
-    subject: "Integrated Science Prediction",
-    is_premium: true,
-    price: 50,
-    storage_path: "exams/kpsea_science.pdf"
-  },
-  {
-    id: "kjsea-math-2026",
-    school_tier: "prediction exams",
-    grade_class: "KJSEA",
-    term: "Term 2",
-    subject: "Grade 9 Mathematics Model Assessment",
-    is_premium: true,
-    price: 100,
-    storage_path: "exams/kjsea_math.pdf"
-  },
-  {
-    id: "kjsea-science-2026",
-    school_tier: "prediction exams",
-    grade_class: "KJSEA",
-    term: "Term 2",
-    subject: "Grade 9 Integrated Science Prediction",
-    is_premium: true,
-    price: 100,
-    storage_path: "exams/kjsea_science.pdf"
-  },
-  {
-    id: "kcse-math-p1",
-    school_tier: "prediction exams",
-    grade_class: "KCSE",
-    term: "Term 2",
-    subject: "Mathematics Paper 1 National Benchmark",
-    is_premium: true,
-    price: 150,
-    storage_path: "exams/kcse_math_p1.pdf"
-  }
-];
-
 export default function PredictionExamsPage() {
   const router = useRouter();
-  const [selectedExam, setSelectedExam] = useState('KJSEA'); // Defaults to KJSEA to show your junior secondary items
-  const [selectedTerm, setSelectedTerm] = useState('Term 2'); // Defaults to Term 2 as seen in your screenshot
+  const [selectedExam, setSelectedExam] = useState('KJSEA'); 
+  const [selectedTerm, setSelectedTerm] = useState('Term 2'); 
   const [papers, setPapers] = useState([]);
   const [loading, setLoading] = useState(false);
   
@@ -78,59 +24,75 @@ export default function PredictionExamsPage() {
   const examTypes = ['KPSEA', 'KJSEA', 'KCSE'];
   const terms = ['Term 1', 'Term 2', 'Term 3'];
 
-  // Automatically fetch papers when tier, grade, or term filters alter
+  // Automatically read and decode bucket files on filter click
   useEffect(() => {
-    const fetchAutomatedPapers = async () => {
+    const autoFetchFromBucket = async () => {
       setLoading(true);
       setCheckoutPaper(null);
       setPaymentStatus('');
       try {
-        const { data, error } = await supabase
-          .from('exams')
-          .select('*')
-          .eq('school_tier', 'prediction exams')
-          .eq('grade_class', selectedExam)
-          .eq('term', selectedTerm)
-          .order('is_premium', { ascending: false })
-          .order('subject', { ascending: true });
+        // 1. List all files directly from your 'premium resources' storage bucket
+        const { data: fileList, error } = await supabase
+          .storage
+          .from('premium resources')
+          .list('', { limit: 100 });
 
         if (error) throw error;
 
-        // 🔥 If Supabase returns empty data, we safely use our hardcoded local array filter
-        if (!data || data.length === 0) {
-          const filteredLocal = LOCAL_BACKUP_PAPERS.filter(
-            (p) => p.grade_class === selectedExam && p.term === selectedTerm
+        if (fileList) {
+          // 2. Map through the bucket files and decode their names automatically
+          const decodedPapers = fileList
+            .filter(file => file.name.endsWith('.pdf')) // Only process PDF files
+            .map((file) => {
+              // Remove the .pdf extension and split the name by hyphens
+              const nameWithoutExt = file.name.replace('.pdf', '');
+              const parts = nameWithoutExt.split('-');
+
+              // Default fallbacks if a file doesn't follow the exact naming scheme
+              const tier = parts[0] || 'unknown';
+              const grade = parts[1] || 'KJSEA';
+              const term = parts[2] || 'Term 2';
+              const rawSubject = parts[3] || 'Assessment Paper';
+              const priceVal = parts[4] || '100';
+
+              // Clean up presentation formatting (replace underscores with spaces)
+              const cleanSubject = rawSubject.replace(/_/g, ' ');
+
+              return {
+                id: file.id || file.name,
+                school_tier: tier.replace(/_/g, ' '), // e.g., "prediction exams"
+                grade_class: grade.toUpperCase(),     // e.g., "KJSEA"
+                term: term.charAt(0).toUpperCase() + term.slice(1), // e.g., "Term 2"
+                subject: cleanSubject,
+                price: parseInt(priceVal, 10) || 0,
+                is_premium: parseInt(priceVal, 10) > 0,
+                storage_path: file.name // Safe reference for delivery
+              };
+            });
+
+          // 3. Filter the decoded files so only the items matching the open tabs show up
+          const liveFiltered = decodedPapers.filter(
+            (p) => p.school_tier === 'prediction exams' && 
+                   p.grade_class === selectedExam && 
+                   p.term === selectedTerm
           );
-          setPapers(filteredLocal);
-        } else {
-          setPapers(data);
+
+          setPapers(liveFiltered);
         }
       } catch (err) {
-        console.error('Database query error:', err.message);
-        // Fallback to local files if database is completely offline or missing
-        const filteredLocal = LOCAL_BACKUP_PAPERS.filter(
-          (p) => p.grade_class === selectedExam && p.term === selectedTerm
-        );
-        setPapers(filteredLocal);
+        console.error('Storage bucket reading error:', err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAutomatedPapers();
+    autoFetchFromBucket();
   }, [selectedExam, selectedTerm]);
 
-  // Triggered when a user selects a paper row
   const handlePaperClick = (paper) => {
-    if (paper.is_premium) {
-      setCheckoutPaper(paper); // Opens the M-PESA STK menu drawer
-    } else {
-      alert(`Opening Free Document: ${paper.subject}`);
-      window.open(`${supabaseUrl}/storage/v1/object/public/${paper.storage_path}`, '_blank');
-    }
+    setCheckoutPaper(paper); // Opens the M-PESA checkout drawer
   };
 
-  // Triggers your secure M-PESA API Route
   const handleStkPushSubmit = async (e) => {
     e.preventDefault();
     setPaymentStatus('sending');
@@ -141,7 +103,7 @@ export default function PredictionExamsPage() {
     }
 
     if (!formattedPhone.startsWith('254') || formattedPhone.length !== 12) {
-      alert('Please enter a valid Safaricom phone number (e.g., 0712345678 or 254712345678)');
+      alert('Please enter a valid Safaricom phone number (e.g., 0712345678)');
       setPaymentStatus('');
       return;
     }
@@ -168,7 +130,7 @@ export default function PredictionExamsPage() {
       }
     } catch (error) {
       console.error('STK Push submission error:', error);
-      alert('Payment server unreachable. Let us set up the API endpoint next!');
+      alert('Payment execution failed. Waiting for live shortcode settings!');
       setPaymentStatus('');
     }
   };
@@ -208,7 +170,7 @@ export default function PredictionExamsPage() {
 
         {/* DYNAMIC M-PESA POPUP DIALOG */}
         {checkoutPaper && (
-          <div className="mb-8 border-2 border-[#D4AF37] bg-white rounded-2xl p-6 shadow-md animate-fadeIn">
+          <div className="mb-8 border-2 border-[#D4AF37] bg-white rounded-2xl p-6 shadow-md">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h3 className="font-black text-[#002D62] text-xs uppercase tracking-widest">Secure M-PESA Checkout</h3>
@@ -252,7 +214,7 @@ export default function PredictionExamsPage() {
           </h3>
 
           {loading ? (
-            <p className="text-center text-xs text-gray-400 py-6 font-bold uppercase tracking-widest">Querying Storage Core...</p>
+            <p className="text-center text-xs text-gray-400 py-6 font-bold uppercase tracking-widest">Scanning Bucket Core...</p>
           ) : papers.length === 0 ? (
             <p className="text-center text-xs text-gray-400 py-6">No assessment papers live for this filter combination yet.</p>
           ) : (
@@ -261,24 +223,16 @@ export default function PredictionExamsPage() {
                 <div 
                   key={paper.id} 
                   onClick={() => handlePaperClick(paper)}
-                  className={`group border rounded-xl p-4 flex items-center justify-between cursor-pointer transition-all ${
-                    paper.is_premium ? 'border-amber-200 bg-amber-50/20 hover:bg-amber-50/40' : 'border-gray-100 hover:border-[#002D62] hover:bg-blue-50/30'
-                  }`}
+                  className="group border border-amber-200 bg-amber-50/20 hover:bg-amber-50/40 rounded-xl p-4 flex items-center justify-between cursor-pointer transition-all"
                 >
                   <div>
                     <h4 className="font-extrabold text-[#002D62] text-xs sm:text-sm uppercase tracking-tight">{paper.subject}</h4>
                     <p className="text-gray-400 text-[11px] mt-0.5">Complete Booklet + Verified Marking Guide</p>
                   </div>
                   <div>
-                    {paper.is_premium ? (
-                      <span className="text-[10px] font-black tracking-wider text-white bg-[#D4AF37] px-3 py-1.5 rounded uppercase shadow-sm">
-                        KES {paper.price} 🎯
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-black tracking-wider text-white bg-green-600 px-3 py-1.5 rounded uppercase shadow-sm">
-                        FREE 📂
-                      </span>
-                    )}
+                    <span className="text-[10px] font-black tracking-wider text-white bg-[#D4AF37] px-3 py-1.5 rounded uppercase shadow-sm">
+                      KES {paper.price} 🎯
+                    </span>
                   </div>
                 </div>
               ))}
@@ -288,5 +242,4 @@ export default function PredictionExamsPage() {
       </main>
     </div>
   );
-                }
-    
+}
