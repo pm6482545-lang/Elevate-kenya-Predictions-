@@ -60,14 +60,15 @@ export default function PredictionExamsPage() {
               const cleanTerm = rawTerm.replace(/_/g, ' ');
               const cleanSubject = rawSubject.replace(/_/g, ' ');
 
-              // Capitalize terms nicely so they match the UI button states perfectly
+              // Capitalize terms nicely so they display beautifully on the card UI
               const formattedTerm = cleanTerm.replace(/\b\w/g, c => c.toUpperCase());
 
               return {
                 id: file.id || file.name,
-                school_tier: tier.trim(),
-                grade_class: grade.trim().toUpperCase(), // Normalizes 'kjsea' to 'KJSEA'
-                term: formattedTerm.trim(),              // Normalizes 'Term 2' to match state
+                school_tier: tier.trim().toLowerCase(),      // e.g. "prediction_exams"
+                grade_class: grade.trim().toUpperCase(),     // e.g. "KJSEA"
+                term: formattedTerm.trim(),                  // e.g. "Term 2" for UI display
+                raw_term_clean: cleanTerm.trim().toLowerCase(), // e.g. "term 2" for secure matching
                 subject: cleanSubject.trim(),
                 price: parseInt(priceVal, 10) || 0,
                 is_premium: parseInt(priceVal, 10) > 0,
@@ -75,11 +76,11 @@ export default function PredictionExamsPage() {
               };
             });
 
-          // 3. Dynamic Filter matching against whichever tab selection is active
+          // 3. Dynamic Case-Insensitive Filter matching against active selections
           const liveFiltered = decodedPapers.filter(
             (p) => p.school_tier === 'prediction_exams' && 
-                   p.grade_class === selectedExam && 
-                   p.term === selectedTerm
+                   p.grade_class === selectedExam.toUpperCase() && 
+                   p.raw_term_clean === selectedTerm.toLowerCase()
           );
 
           setPapers(liveFiltered);
