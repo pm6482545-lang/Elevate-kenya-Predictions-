@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 
-// Connection to your Supabase project architecture
+// Absolute defensive runtime connection handling
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -39,42 +39,50 @@ export default function PredictionExamsPage() {
 
         if (error) throw error;
 
-        if (fileList) {
-          // 2. Map through the bucket files and decode their names automatically
+        if (fileList && Array.isArray(fileList)) {
+          // 2. Map through the bucket files with extra formatting defense
           const decodedPapers = fileList
-            .filter(file => file.name.endsWith('.pdf')) // Only process PDF files
+            .filter(file => file && file.name && file.name.endsWith('.pdf')) // Only accept valid PDF extensions
             .map((file) => {
-              // Extract file name without extension cleanly
-              const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.pdf')) || file.name;
-              const parts = nameWithoutExt.split('-');
+              try {
+                // Strip extension safely
+                const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.pdf')) || file.name;
+                const parts = nameWithoutExt.split('-');
 
-              // Extract raw parts based on your formula layout
-              const rawTier = parts[0] || '';
-              const rawGrade = parts[1] || '';
-              const rawTerm = parts[2] || '';
-              const rawSubject = parts[3] || '';
-              const priceVal = parts[4] || '0';
+                // Skip any file that doesn't follow our hyphen formula setup
+                if (parts.length < 4) return null;
 
-              // Dynamic underscore to space cleanup
-              const cleanTerm = rawTerm.split('_').join(' ');
-              const cleanSubject = rawSubject.split('_').join(' ');
+                const rawTier = parts[0] || '';
+                const rawGrade = parts[1] || '';
+                const rawTerm = parts[2] || '';
+                const rawSubject = parts[3] || '';
+                const priceVal = parts[4] || '0';
 
-              // Capitalize terms nicely so they display beautifully on the card UI
-              const formattedTerm = cleanTerm.replace(/\b\w/g, c => c.toUpperCase());
+                // Clean formatting characters
+                const cleanTerm = rawTerm.split('_').join(' ');
+                const cleanSubject = rawSubject.split('_').join(' ');
 
-              return {
-                id: file.id || file.name,
-                school_tier: rawTier.trim().toLowerCase(),      // e.g. "prediction_exams"
-                grade_class: rawGrade.trim().toLowerCase(),     // e.g. "kjsea"
-                term_match: cleanTerm.trim().toLowerCase(),    // e.g. "term 2" for secure matching
-                display_term: formattedTerm.trim(),            // e.g. "Term 2"
-                subject: cleanSubject.trim(),
-                price: parseInt(priceVal, 10) || 0,
-                storage_path: file.name
-              };
-            });
+                // Capitalize terms for the UI presentation element
+                const formattedTerm = cleanTerm.replace(/\b\w/g, c => c.toUpperCase());
 
-          // 3. Dynamic Case-Insensitive Filter matching against active selections
+                return {
+                  id: file.id || file.name,
+                  school_tier: rawTier.trim().toLowerCase(),      
+                  grade_class: rawGrade.trim().toLowerCase(),     
+                  term_match: cleanTerm.trim().toLowerCase(),    
+                  display_term: formattedTerm.trim(),            
+                  subject: cleanSubject.trim(),
+                  price: parseInt(priceVal, 10) || 0,
+                  storage_path: file.name
+                };
+              } catch (innerErr) {
+                console.error("Skipping damaged file name object structure:", file.name);
+                return null;
+              }
+            })
+            .filter(item => item !== null); // Strip out skipped items cleanly
+
+          // 3. Match against currently selected target button properties
           const liveFiltered = decodedPapers.filter(
             (p) => p.school_tier === 'prediction_exams' && 
                    p.grade_class === selectedExam.toLowerCase() && 
