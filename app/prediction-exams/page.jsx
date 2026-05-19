@@ -16,10 +16,20 @@ export default function PredictionExamsPage() {
     alert(`Initiating fetch for ${selectedExam} -> ${selectedTerm} -> ${subject}. Next we will connect this to Supabase!`);
   };
 
-  // Mock subjects based on your curriculum development focus
+  // Completely mapped subject metrics matching your exact node counts
   const subjectsByExam = {
     KPSEA: ['Mathematics', 'Integrated Science', 'English', 'Kiswahili', 'Creative Arts & Social Studies'],
-    KJSEA: ['Mathematics', 'Integrated Science', 'Pre-Technical Studies', 'English', 'Kiswahili', 'Social Studies'],
+    KJSEA: [
+      'Mathematics', 
+      'Integrated Science', 
+      'Pre-Technical Studies', 
+      'Agriculture and Nutrition', 
+      'Creative Arts and Sports', 
+      'Christian Religious Education (CRE)', 
+      'English', 
+      'Kiswahili', 
+      'Social Studies'
+    ],
     KCSE: ['Mathematics Alt A', 'Biology', 'Chemistry', 'Physics', 'English', 'Kiswahili', 'History']
   };
 
