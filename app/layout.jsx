@@ -10,7 +10,9 @@ export default function RootLayout({ children }) {
     <html lang="en" className="scroll-smooth">
       <head />
       <body className="bg-[#F4F6F9] text-gray-800 font-sans antialiased m-0 p-0">
-        {children}
+        <div id="__next">
+          {children}
+        </div>
       </body>
     </html>
   );
