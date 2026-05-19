@@ -24,7 +24,7 @@ export default function PredictionExamsPage() {
   const examTypes = ['KPSEA', 'KJSEA', 'KCSE'];
   const terms = ['Term 1', 'Term 2', 'Term 3'];
 
-  // Automatically read and decode bucket files on filter click
+  // Automatically read, decode, and match bucket files dynamically
   useEffect(() => {
     const autoFetchFromBucket = async () => {
       setLoading(true);
@@ -48,31 +48,36 @@ export default function PredictionExamsPage() {
               const nameWithoutExt = file.name.replace('.pdf', '');
               const parts = nameWithoutExt.split('-');
 
-              // Default fallbacks if a file doesn't follow the exact naming scheme
+              // Extract raw parts based on your formula layout
               const tier = parts[0] || 'unknown';
               const grade = parts[1] || 'KJSEA';
-              const term = parts[2] || 'Term 2';
-              const rawSubject = parts[3] || 'Assessment Paper';
-              const priceVal = parts[4] || '100';
+              const rawTerm = parts[2] || 'Term_1';
+              const rawSubject = parts[3] || 'Subject';
+              const priceVal = parts[4] || '0';
 
-              // Clean up presentation formatting (replace underscores with spaces)
+              // Dynamic underscore to space cleanup
+              // This normalizes "Term_2" to "Term 2" or "Integrated_Science" to "Integrated Science"
+              const cleanTerm = rawTerm.replace(/_/g, ' ');
               const cleanSubject = rawSubject.replace(/_/g, ' ');
+
+              // Capitalize terms nicely so they match the UI button states perfectly
+              const formattedTerm = cleanTerm.replace(/\b\w/g, c => c.toUpperCase());
 
               return {
                 id: file.id || file.name,
-                school_tier: tier.replace(/_/g, ' '), // e.g., "prediction exams"
-                grade_class: grade.toUpperCase(),     // e.g., "KJSEA"
-                term: term.charAt(0).toUpperCase() + term.slice(1), // e.g., "Term 2"
-                subject: cleanSubject,
+                school_tier: tier.trim(),
+                grade_class: grade.trim().toUpperCase(), // Normalizes 'kjsea' to 'KJSEA'
+                term: formattedTerm.trim(),              // Normalizes 'Term 2' to match state
+                subject: cleanSubject.trim(),
                 price: parseInt(priceVal, 10) || 0,
                 is_premium: parseInt(priceVal, 10) > 0,
-                storage_path: file.name // Safe reference for delivery
+                storage_path: file.name
               };
             });
 
-          // 3. Filter the decoded files so only the items matching the open tabs show up
+          // 3. Dynamic Filter matching against whichever tab selection is active
           const liveFiltered = decodedPapers.filter(
-            (p) => p.school_tier === 'prediction exams' && 
+            (p) => p.school_tier === 'prediction_exams' && 
                    p.grade_class === selectedExam && 
                    p.term === selectedTerm
           );
@@ -130,7 +135,7 @@ export default function PredictionExamsPage() {
       }
     } catch (error) {
       console.error('STK Push submission error:', error);
-      alert('Payment execution failed. Waiting for live shortcode settings!');
+      alert('Payment initialization failed. Ensure Vercel Environment Variables match live Daraja passkeys.');
       setPaymentStatus('');
     }
   };
