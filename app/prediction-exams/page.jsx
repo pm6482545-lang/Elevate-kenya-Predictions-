@@ -106,8 +106,33 @@ export default function PredictionExamsPage() {
     autoFetchFromBucket();
   }, [selectedExam, selectedTerm]);
 
-  const handlePaperClick = (paper) => {
-    setCheckoutPaper(paper);
+  // AUTOMATED INSTANT DOWNLOAD FOR FREE DOCUMENTS
+  const handlePaperClick = async (paper) => {
+    if (paper.price === 0) {
+      try {
+        const { data, error } = await supabase
+          .storage
+          .from('premium resources')
+          .createSignedUrl(paper.storage_path, 60);
+
+        if (error) throw error;
+        
+        if (data?.signedUrl) {
+          // Creates a hidden link element to force immediate file download
+          const downloadLink = document.createElement('a');
+          downloadLink.href = data.signedUrl;
+          downloadLink.target = '_blank';
+          downloadLink.download = paper.storage_path;
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+        }
+      } catch (err) {
+        alert(`Failed to download document: ${err.message}`);
+      }
+    } else {
+      setCheckoutPaper(paper);
+    }
   };
 
   const handleStkPushSubmit = async (e) => {
@@ -150,6 +175,20 @@ export default function PredictionExamsPage() {
       alert('Payment initialization failed.');
       setPaymentStatus('');
     }
+  };
+
+  // HELPER TO GENERATE PRE-FILLED WHATSAPP PURCHASE MESSAGE WITH YOUR TELEPHONE LINK
+  const triggerWhatsAppPayment = () => {
+    const businessPhone = "254746357349"; 
+    const customMessage = `Hello Elevate Kenya, I would like to buy the premium prediction booklet:\n\n` +
+                          `• Exam Tier: ${selectedExam}\n` +
+                          `• Subject: ${checkoutPaper.subject.toUpperCase()}\n` +
+                          `• Term: ${checkoutPaper.display_term}\n` +
+                          `• Price: KES ${checkoutPaper.price}\n\n` +
+                          `Please guide me on how to make the payment and receive the download link.`;
+    
+    const encodeMessage = encodeURIComponent(customMessage);
+    window.open(`https://wa.me/${businessPhone}?text=${encodeMessage}`, '_blank');
   };
 
   return (
@@ -212,42 +251,68 @@ export default function PredictionExamsPage() {
           </div>
         </div>
 
-        {/* DYNAMIC M-PESA POPUP DIALOG */}
-        {checkoutPaper && (
-          <div className="mb-6 border-2 border-[#D4AF37] bg-white rounded-2xl p-4 sm:p-6 shadow-md">
-            <div className="flex justify-between items-start mb-4">
+        {/* DUAL PAYMENT INTEGRATION CONTAINER */}
+        {checkoutPaper && checkoutPaper.price > 0 && (
+          <div className="mb-6 border-2 border-[#D4AF37] bg-white rounded-2xl p-4 sm:p-6 shadow-md transition-all">
+            <div className="flex justify-between items-start mb-4 border-b pb-3">
               <div>
-                <h3 className="font-black text-[#002D62] text-[10px] uppercase tracking-widest">Secure M-PESA Checkout</h3>
+                <h3 className="font-black text-[#002D62] text-[10px] uppercase tracking-widest">Select Payment Method</h3>
                 <p className="text-sm font-extrabold text-gray-900 mt-1 uppercase">
-                  {selectedExam} {checkoutPaper.subject} ({checkoutPaper.display_term})
+                  {selectedExam} {checkoutPaper.subject} — <span className="text-[#D4AF37]">KES {checkoutPaper.price}</span>
                 </p>
               </div>
               <button onClick={() => setCheckoutPaper(null)} className="text-gray-400 hover:text-gray-600 font-bold text-sm p-1">✕</button>
             </div>
 
-            <form onSubmit={handleStkPushSubmit} className="flex flex-col sm:flex-row items-end gap-3 border-t pt-4">
-              <div className="w-full">
-                <label className="block text-[10px] font-black text-gray-500 uppercase tracking-wider mb-1">Enter Safaricom Number</label>
-                <input 
-                  type="text" 
-                  placeholder="e.g., 0712345678" 
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  disabled={paymentStatus === 'sending' || paymentStatus === 'prompted'}
-                  className="w-full border-2 border-gray-200 px-3 py-2.5 rounded-md text-sm font-bold focus:border-[#002D62] outline-none"
-                  required 
-                />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+              {/* METHOD 1: MPESA MANUAL TRIGGER */}
+              <div className="bg-gray-50/50 border border-gray-100 rounded-xl p-4">
+                <h4 className="text-xs font-black text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  Option 1: Lipa na M-PESA
+                </h4>
+                <form onSubmit={handleStkPushSubmit} className="space-y-3">
+                  <div>
+                    <label className="block text-[9px] font-black text-gray-400 uppercase tracking-wider mb-1">Safaricom Number</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g., 0712345678" 
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      disabled={paymentStatus === 'sending' || paymentStatus === 'prompted'}
+                      className="w-full border-2 border-gray-200 px-3 py-2 rounded-md text-xs font-bold focus:border-[#002D62] outline-none bg-white"
+                      required 
+                    />
+                  </div>
+                  <button 
+                    type="submit"
+                    disabled={paymentStatus === 'sending' || paymentStatus === 'prompted'}
+                    className="w-full bg-[#002D62] hover:bg-[#001D42] text-white font-black text-[11px] uppercase tracking-wider py-3 rounded-md transition-all shadow-sm disabled:bg-gray-300"
+                  >
+                    {paymentStatus === 'sending' && 'Processing STK... 🔄'}
+                    {paymentStatus === 'prompted' && 'Check Sim Prompt Pin! 📱'}
+                    {!paymentStatus && `Pay KES ${checkoutPaper.price} Now`}
+                  </button>
+                </form>
               </div>
-              <button 
-                type="submit"
-                disabled={paymentStatus === 'sending' || paymentStatus === 'prompted'}
-                className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-black text-xs uppercase tracking-wider px-4 py-3.5 rounded-md transition-all shadow whitespace-nowrap disabled:bg-gray-300"
-              >
-                {paymentStatus === 'sending' && 'Sending STK Push... 🔄'}
-                {paymentStatus === 'prompted' && 'Check Phone Pin Prompt! 📱'}
-                {!paymentStatus && `Pay KES ${checkoutPaper.price} via M-PESA 💳`}
-              </button>
-            </form>
+
+              {/* METHOD 2: WHATSAPP DIRECT AGENT CONTEXT */}
+              <div className="bg-gray-50/50 border border-gray-100 rounded-xl p-4 flex flex-col justify-between">
+                <div>
+                  <h4 className="text-xs font-black text-gray-700 uppercase tracking-wider mb-1">
+                    Option 2: Pay on WhatsApp
+                  </h4>
+                  <p className="text-[11px] text-gray-400 leading-normal mb-4">
+                    Prefer chatting or paying manually? Send an automated request directly to our support desk.
+                  </p>
+                </div>
+                <button 
+                  onClick={triggerWhatsAppPayment}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[11px] uppercase tracking-wider py-3 rounded-md transition-all shadow-sm flex items-center justify-center gap-1.5"
+                >
+                  Chat & Pay via WhatsApp 💬
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -267,16 +332,28 @@ export default function PredictionExamsPage() {
                 <div 
                   key={paper.id} 
                   onClick={() => handlePaperClick(paper)}
-                  className="group border border-amber-200 bg-amber-50/20 hover:bg-amber-50/40 rounded-xl p-3 sm:p-4 flex items-center justify-between cursor-pointer transition-all gap-2"
+                  className={`group border rounded-xl p-3 sm:p-4 flex items-center justify-between cursor-pointer transition-all gap-2 ${
+                    paper.price === 0 
+                      ? 'border-emerald-200 bg-emerald-50/10 hover:bg-emerald-50/30' 
+                      : 'border-amber-200 bg-amber-50/20 hover:bg-amber-50/40'
+                  }`}
                 >
                   <div className="min-w-0 flex-1">
                     <h4 className="font-extrabold text-[#002D62] text-xs sm:text-sm uppercase tracking-tight truncate">{paper.subject}</h4>
-                    <p className="text-gray-400 text-[10px] sm:text-[11px] mt-0.5 truncate">Complete Booklet + Marking Guide</p>
+                    <p className="text-gray-400 text-[10px] sm:text-[11px] mt-0.5 truncate">
+                      {paper.price === 0 ? 'Free Open Revision Material' : 'Complete Booklet + Premium Marking Guide'}
+                    </p>
                   </div>
                   <div className="flex-shrink-0">
-                    <span className="text-[9px] sm:text-[10px] font-black tracking-wider text-white bg-[#D4AF37] px-2.5 sm:px-3 py-1.5 rounded uppercase shadow-sm whitespace-nowrap">
-                      KES {paper.price} 🎯
-                    </span>
+                    {paper.price === 0 ? (
+                      <span className="text-[10px] font-black tracking-wider text-white bg-emerald-600 px-3 py-2 rounded uppercase shadow-sm whitespace-nowrap group-hover:bg-emerald-700 transition-colors">
+                        DOWNLOAD 📥
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-black tracking-wider text-white bg-[#D4AF37] px-3 py-2 rounded uppercase shadow-sm whitespace-nowrap">
+                        KES {paper.price} 🎯
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}
