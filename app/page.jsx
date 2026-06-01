@@ -46,8 +46,9 @@ export default function HomePage() {
             <button onClick={() => router.push('/prediction-exams')} className="text-[#D4AF37] hover:underline transition uppercase font-black tracking-wider">EXAMS 🎯</button>
             <button onClick={() => scrollToSection('about')} className="hover:text-[#D4AF37] transition uppercase">ABOUT ME</button>
             <span className="h-4 w-[1px] bg-white/20 mx-1"></span>
-            <button onClick={() => router.push('/auth/signin')} className="text-white hover:text-[#D4AF37] transition uppercase">Sign In</button>
-            <button onClick={() => router.push('/auth/signup')} className="bg-transparent border-2 border-[#D4AF37] text-white px-3 py-1.5 rounded-md font-black hover:bg-[#D4AF37] hover:text-[#002D62] transition uppercase">Sign Up</button>
+            {/* UPDATED TO ROUTE TO YOUR NEW LOGIN FOLDER */}
+            <button onClick={() => router.push('/login')} className="text-white hover:text-[#D4AF37] transition uppercase">Sign In</button>
+            <button onClick={() => router.push('/login')} className="bg-transparent border-2 border-[#D4AF37] text-white px-3 py-1.5 rounded-md font-black hover:bg-[#D4AF37] hover:text-[#002D62] transition uppercase">Sign Up</button>
           </div>
 
           {/* Mobile Menu Trigger */}
@@ -70,8 +71,9 @@ export default function HomePage() {
             <button onClick={() => { setIsMenuOpen(false); router.push('/prediction-exams'); }} className="block w-full text-left py-1.5 px-2 text-[#D4AF37] bg-white/10 rounded transition font-black">EXAMS 🎯</button>
             <button onClick={() => scrollToSection('about')} className="block w-full text-left py-1.5 px-2 hover:bg-white/5 hover:text-[#D4AF37] rounded transition">ABOUT ME</button>
             <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
-              <button onClick={() => { setIsMenuOpen(false); router.push('/auth/signin'); }} className="w-full text-center py-2 bg-white/10 text-white rounded font-bold uppercase tracking-wider">Sign In</button>
-              <button onClick={() => { setIsMenuOpen(false); router.push('/auth/signup'); }} className="w-full text-center py-2 bg-[#D4AF37] text-[#002D62] rounded font-black uppercase tracking-wider">Sign Up</button>
+              {/* UPDATED MOBILE SIDEBAR TO ROUTE TO YOUR LOGIN FOLDER */}
+              <button onClick={() => { setIsMenuOpen(false); router.push('/login'); }} className="w-full text-center py-2 bg-white/10 text-white rounded font-bold uppercase tracking-wider">Sign In</button>
+              <button onClick={() => { setIsMenuOpen(false); router.push('/login'); }} className="w-full text-center py-2 bg-[#D4AF37] text-[#002D62] rounded font-black uppercase tracking-wider">Sign Up</button>
             </div>
           </div>
         )}
