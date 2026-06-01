@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '../lib/Supabase'; // This imports the helper you just made!
+// FIXED: This correctly steps up one level to app/, then goes straight into your lib helper folder
+import { supabase } from '../lib/supabase'; 
 
 export default function LoginPage() {
   const router = useRouter();
