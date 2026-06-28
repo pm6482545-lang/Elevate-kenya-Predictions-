@@ -87,11 +87,20 @@ export default function PredictionExamsPage() {
             })
             .filter(item => item !== null);
 
-          const liveFiltered = decodedPapers.filter(
-            (p) => p.school_tier === 'prediction_exams' && 
-                   p.grade_class === selectedExam.toLowerCase() && 
-                   p.term_match === selectedTerm.toLowerCase()
-          );
+          // 🛠️ FIX: Made the filter checks case-insensitive and stripped spacing variations
+          const liveFiltered = decodedPapers.filter((p) => {
+            const cleanGradeClass = p.grade_class.toLowerCase().replace(/\s+/g, '');
+            const cleanSelectedExam = selectedExam.toLowerCase().replace(/\s+/g, '');
+
+            const cleanTermMatch = p.term_match.toLowerCase().replace(/\s+/g, '');
+            const cleanSelectedTerm = selectedTerm.toLowerCase().replace(/\s+/g, '');
+
+            return (
+              p.school_tier === 'prediction_exams' && 
+              cleanGradeClass === cleanSelectedExam && 
+              cleanTermMatch === cleanSelectedTerm
+            );
+          });
 
           setPapers(liveFiltered);
         }
@@ -118,7 +127,6 @@ export default function PredictionExamsPage() {
         if (error) throw error;
         
         if (data?.signedUrl) {
-          // Creates a hidden link element to force immediate file download
           const downloadLink = document.createElement('a');
           downloadLink.href = data.signedUrl;
           downloadLink.target = '_blank';
@@ -177,7 +185,6 @@ export default function PredictionExamsPage() {
     }
   };
 
-  // HELPER TO GENERATE PRE-FILLED WHATSAPP PURCHASE MESSAGE WITH YOUR TELEPHONE LINK
   const triggerWhatsAppPayment = () => {
     const businessPhone = "254746357349"; 
     const customMessage = `Hello Elevate Kenya, I would like to buy the premium prediction booklet:\n\n` +
@@ -193,7 +200,6 @@ export default function PredictionExamsPage() {
 
   return (
     <div className="min-h-screen bg-[#F4F6F9] text-gray-800 font-sans antialiased">
-      {/* ADAPTIVE MOBILE-FRIENDLY HEADER */}
       <header className="bg-[#002D62] text-white py-6 sm:py-8 px-4 border-b-4 border-[#D4AF37] text-center shadow-md flex flex-col items-center justify-center gap-2 relative">
         <button 
           onClick={() => router.push('/')} 
@@ -208,7 +214,6 @@ export default function PredictionExamsPage() {
       </header>
 
       <main className="max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-12">
-        {/* SYSTEM STATUS DIAGNOSTIC PANEL */}
         {systemError && (
           <div className="mb-4 bg-red-50 border-2 border-red-500 rounded-xl p-4 text-red-900 text-xs font-mono overflow-x-auto">
             <p className="font-bold uppercase tracking-wider mb-1 text-red-700">⚠️ System Diagnostic Notice:</p>
@@ -221,7 +226,6 @@ export default function PredictionExamsPage() {
           <span>Files in Bucket: <strong className="text-gray-900">{debugRawFiles.length}</strong></span>
         </div>
 
-        {/* RESPONSIVE EXAM TIER ROW */}
         <div className="text-center mb-4 sm:mb-6">
           <div className="grid grid-cols-3 sm:inline-flex rounded-lg bg-gray-200 p-1 shadow-inner w-full sm:w-auto gap-1 sm:gap-0">
             {examTypes.map((exam) => (
@@ -236,7 +240,6 @@ export default function PredictionExamsPage() {
           </div>
         </div>
 
-        {/* RESPONSIVE TERM ROW */}
         <div className="text-center mb-8 sm:mb-10">
           <div className="flex justify-center gap-2 sm:gap-3 w-full">
             {terms.map((term) => (
@@ -251,7 +254,6 @@ export default function PredictionExamsPage() {
           </div>
         </div>
 
-        {/* DUAL PAYMENT INTEGRATION CONTAINER */}
         {checkoutPaper && checkoutPaper.price > 0 && (
           <div className="mb-6 border-2 border-[#D4AF37] bg-white rounded-2xl p-4 sm:p-6 shadow-md transition-all">
             <div className="flex justify-between items-start mb-4 border-b pb-3">
@@ -265,7 +267,6 @@ export default function PredictionExamsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-              {/* METHOD 1: MPESA MANUAL TRIGGER */}
               <div className="bg-gray-50/50 border border-gray-100 rounded-xl p-4">
                 <h4 className="text-xs font-black text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                   Option 1: Lipa na M-PESA
@@ -295,7 +296,6 @@ export default function PredictionExamsPage() {
                 </form>
               </div>
 
-              {/* METHOD 2: WHATSAPP DIRECT AGENT CONTEXT */}
               <div className="bg-gray-50/50 border border-gray-100 rounded-xl p-4 flex flex-col justify-between">
                 <div>
                   <h4 className="text-xs font-black text-gray-700 uppercase tracking-wider mb-1">
@@ -316,7 +316,6 @@ export default function PredictionExamsPage() {
           </div>
         )}
 
-        {/* EXAM CARDS CONTAINER */}
         <div className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 shadow-sm">
           <h3 className="font-black text-[#002D62] text-xs sm:text-sm uppercase tracking-wider border-b pb-3 mb-4">
             Available {selectedExam} Booklets ({selectedTerm})
